@@ -118,10 +118,6 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="WSAFIPFE, Version=92.4.0.0, Culture=neutral, PublicKeyToken=e3525bb207303650, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Program Files (x86)\SC\WSAFIPFE\WSAFIPFE.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Import Include="Microsoft.VisualBasic" />
@@ -544,6 +540,9 @@
     <Compile Include="Módulos\general.vb" />
     <Compile Include="Módulos\LeeCotizacionDolar.vb" />
     <Compile Include="Módulos\mconfig.vb" />
+    <Compile Include="Módulos\afip_native.vb" />
+    <Compile Include="AfipNative\LoginTicket.vb" />
+    <Compile Include="AfipNative\WsfeReference.vb" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Formularios\advancesearch.resx">
