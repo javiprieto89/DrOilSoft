@@ -14,13 +14,13 @@
 
         cargarChk()
 
-        Cargar_listview(lsv_item, "SELECT pit.id_item AS 'ID', i.item AS 'Item', ti.tipo AS 'Categoría', pit.cantidad AS 'Cantidad', pit.precio AS 'Precio', " &
+        cargar_datagrid(dgv_item, "SELECT pit.id_item AS 'ID', i.item AS 'Item', ti.tipo AS 'Categoría', pit.cantidad AS 'Cantidad', pit.precio AS 'Precio', " &
                     "CAST(pit.cantidad * pit.precio AS DECIMAL(18,3)) AS 'Subtotal', CASE WHEN i.oferta = 0 THEN 'No' ELSE 'Si' END AS 'Oferta' " &
                    "FROM pedidos_detalle AS pit " &
                     "LEFT JOIN items AS i ON pit.id_item = i.id_item " &
                     "LEFT JOIN tipos_items AS ti ON i.id_tipo = ti.id_tipo " &
                     "WHERE pit.activo = '1' AND pit.id_pedido = '" + edita_pedido.id_pedido.ToString + "'", basedb)
-        resaltarcolumna(lsv_item, 4, Color.Red)
+        resaltarcolumnaDG(dgv_item, 4, Color.Red)
 
         txt_notas.Text = edita_pedido.notas
         cmb_condicion.SelectedValue = edita_pedido.id_condicion

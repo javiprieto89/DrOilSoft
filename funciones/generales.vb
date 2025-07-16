@@ -430,6 +430,15 @@ Module generales
         lsview.Refresh()
     End Sub
 
+    Public Sub resaltarcolumnaDG(ByRef dg As DataGridView, ByVal col As Integer, ByVal clr As Color)
+        For Each row As DataGridViewRow In dg.Rows
+            row.Cells(col).Style.ForeColor = clr
+            row.Cells(col).Style.Font = New Font(dg.Font, FontStyle.Bold)
+        Next
+        dg.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.ColumnHeader)
+        dg.Refresh()
+    End Sub
+
     Public Function sqlstrbuscar(ByVal txtsearch As String) As String
         Dim sqlstr As String = ""
         Select Case tabla
