@@ -526,7 +526,15 @@ Public Class main
         End If
 
         If sqlstr <> "" Then
-            Cargar_listview(lsview, sqlstr, basedb, desde, hasta, nRegs, tPaginas, pagina, txt_nPage, orderCol)
+            If tabla = "clientes" Then
+                cargar_datagrid(dgv_main, sqlstr, basedb)
+                dgv_main.Visible = True
+                lsview.Visible = False
+            Else
+                Cargar_listview(lsview, sqlstr, basedb, desde, hasta, nRegs, tPaginas, pagina, txt_nPage, orderCol)
+                dgv_main.Visible = False
+                lsview.Visible = True
+            End If
             'If tabla = "autos" Then
             ' autosConDeuda(lsview, Color.Red)
             'ElseIf tabla = "items" Then
@@ -664,9 +672,14 @@ Public Class main
     Private Sub listview_DoubleClick(sender As Object, e As EventArgs) Handles lsview.DoubleClick
         If borrado = False Then edicion = True
 
-        If lsview.SelectedIndices.Count = 0 Then Exit Sub
-
-        Dim seleccionado As String = lsview.SelectedItems.Item(0).Text
+        Dim seleccionado As String
+        If dgv_main.Visible Then
+            If dgv_main.Rows.Count = 0 Then Exit Sub
+            seleccionado = dgv_main.CurrentRow.Cells(0).Value.ToString()
+        Else
+            If lsview.SelectedIndices.Count = 0 Then Exit Sub
+            seleccionado = lsview.SelectedItems.Item(0).Text
+        End If
         Select Case tabla
             Case "condiciones"
                 edita_condicion = info_condicion(seleccionado)
@@ -1237,6 +1250,14 @@ Public Class main
         'add_pedido.ShowDialog()
         edicion = False
         actualizarlsv()
+    End Sub
+
+    Private Sub dgv_main_CellDoubleClick(sender As Object, e As DataGridViewCellEventArgs) Handles dgv_main.CellDoubleClick
+        listview_DoubleClick(sender, e)
+    End Sub
+
+    Private Sub dgv_main_MouseDown(sender As Object, e As MouseEventArgs) Handles dgv_main.MouseDown
+        lsview_MouseDown(sender, e)
     End Sub
 
     'Private Sub txt_nPage_Leave(sender As Object, e As EventArgs) Handles txt_nPage.Leave

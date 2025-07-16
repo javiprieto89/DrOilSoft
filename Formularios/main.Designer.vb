@@ -131,6 +131,7 @@ Partial Class main
         Me.ss_info.SuspendLayout()
         CType(Me.pic_search, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.pic, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.dgv_main, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
         'cmd_add
@@ -151,6 +152,24 @@ Partial Class main
         Me.lsview.Size = New System.Drawing.Size(1398, 802)
         Me.lsview.TabIndex = 2
         Me.lsview.UseCompatibleStateImageBehavior = False
+
+        'dgv_main
+        '
+        Me.dgv_main = New System.Windows.Forms.DataGridView()
+        Me.dgv_main.AllowUserToAddRows = False
+        Me.dgv_main.AllowUserToDeleteRows = False
+        Me.dgv_main.AllowUserToOrderColumns = True
+        Me.dgv_main.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.ColumnHeader
+        Me.dgv_main.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
+        Me.dgv_main.Location = New System.Drawing.Point(265, 88)
+        Me.dgv_main.MultiSelect = False
+        Me.dgv_main.Name = "dgv_main"
+        Me.dgv_main.ReadOnly = True
+        Me.dgv_main.RowHeadersVisible = False
+        Me.dgv_main.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect
+        Me.dgv_main.Size = New System.Drawing.Size(1398, 802)
+        Me.dgv_main.TabIndex = 29
+        Me.dgv_main.Visible = False
         '
         'cms_general
         '
@@ -623,6 +642,7 @@ Partial Class main
         Me.Controls.Add(Me.txt_search)
         Me.Controls.Add(Me.lblbusqueda)
         Me.Controls.Add(Me.lsview)
+        Me.Controls.Add(Me.dgv_main)
         Me.Controls.Add(Me.cmd_add)
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.Name = "main"
@@ -635,6 +655,7 @@ Partial Class main
         Me.ss_info.PerformLayout()
         CType(Me.pic_search, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.pic, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.dgv_main, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -642,6 +663,7 @@ Partial Class main
     'Friend WithEvents DrOil As WindowsApplication1.DrOil
     Friend WithEvents cmd_add As System.Windows.Forms.Button
     Friend WithEvents lsview As System.Windows.Forms.ListView
+    Friend WithEvents dgv_main As System.Windows.Forms.DataGridView
     'Friend WithEvents ClienteTableAdapter1 As WindowsApplication1.Database1DataSetTableAdapters.clienteTableAdapter
     'Friend WithEvents Database1DataSet As WindowsApplication1.Database1DataSet
     Friend Shadows WithEvents cms_general As System.Windows.Forms.ContextMenuStrip
