@@ -40,7 +40,7 @@ Partial Class pre_fe
         Me.lbl_date = New System.Windows.Forms.Label()
         Me.lbl_cliente = New System.Windows.Forms.Label()
         Me.lbl_fecha = New System.Windows.Forms.Label()
-        Me.lsv_item = New System.Windows.Forms.ListView()
+        Me.dgv_item = New System.Windows.Forms.DataGridView()
         Me.cmb_comprobante = New System.Windows.Forms.ComboBox()
         Me.pic_searchComprobante = New System.Windows.Forms.PictureBox()
         Me.lbl_comprobante = New System.Windows.Forms.Label()
@@ -228,15 +228,21 @@ Partial Class pre_fe
         Me.lbl_fecha.TabIndex = 104
         Me.lbl_fecha.Text = "Fecha:"
         '
-        'lsv_item
+        'dgv_item
         '
-        Me.lsv_item.Enabled = False
-        Me.lsv_item.Location = New System.Drawing.Point(13, 145)
-        Me.lsv_item.Margin = New System.Windows.Forms.Padding(2)
-        Me.lsv_item.Name = "lsv_item"
-        Me.lsv_item.Size = New System.Drawing.Size(563, 238)
-        Me.lsv_item.TabIndex = 91
-        Me.lsv_item.UseCompatibleStateImageBehavior = False
+        Me.dgv_item.AllowUserToAddRows = False
+        Me.dgv_item.AllowUserToDeleteRows = False
+        Me.dgv_item.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.ColumnHeader
+        Me.dgv_item.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
+        Me.dgv_item.Location = New System.Drawing.Point(13, 145)
+        Me.dgv_item.Margin = New System.Windows.Forms.Padding(2)
+        Me.dgv_item.MultiSelect = False
+        Me.dgv_item.Name = "dgv_item"
+        Me.dgv_item.ReadOnly = True
+        Me.dgv_item.RowHeadersVisible = False
+        Me.dgv_item.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect
+        Me.dgv_item.Size = New System.Drawing.Size(563, 238)
+        Me.dgv_item.TabIndex = 91
         '
         'cmb_comprobante
         '
@@ -352,7 +358,7 @@ Partial Class pre_fe
         Me.Controls.Add(Me.lbl_date)
         Me.Controls.Add(Me.lbl_cliente)
         Me.Controls.Add(Me.lbl_fecha)
-        Me.Controls.Add(Me.lsv_item)
+        Me.Controls.Add(Me.dgv_item)
         Me.Name = "pre_fe"
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
         Me.Text = "Preparar factura"
@@ -380,7 +386,7 @@ Partial Class pre_fe
     Friend WithEvents lbl_date As Label
     Friend WithEvents lbl_cliente As Label
     Friend WithEvents lbl_fecha As Label
-    Friend WithEvents lsv_item As ListView
+    Friend WithEvents dgv_item As DataGridView
     Friend WithEvents cmb_comprobante As ComboBox
     Friend WithEvents pic_searchComprobante As PictureBox
     Friend WithEvents lbl_comprobante As Label
