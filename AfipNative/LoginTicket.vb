@@ -1,4 +1,12 @@
 'AfipNative/LoginTicket.vb'
+Imports System
+Imports System.Xml
+Imports System.Net
+Imports System.Security
+Imports System.Security.Cryptography.X509Certificates
+Imports System.Security.Cryptography.Pkcs
+Imports System.Text
+
 Class LoginTicket
 
     Public UniqueId As UInt32 ' Entero de 32 bits sin signo que identifica el requerimiento
