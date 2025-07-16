@@ -64,6 +64,15 @@ Namespace My
                 Return CType(Me("dbDROilConnectionString"),String)
             End Get
         End Property
+        <Global.System.Configuration.ApplicationScopedSettingAttribute(), _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(), _
+         Global.System.Configuration.SpecialSettingAttribute(Global.System.Configuration.SpecialSetting.WebServiceUrl), _
+         Global.System.Configuration.DefaultSettingValueAttribute("https://wsaahomo.afip.gov.ar/ws/services/LoginCms")> _
+        Public ReadOnly Property ClienteLoginCms_Wsaa_LoginCMSService() As String
+            Get
+                Return CType(Me("ClienteLoginCms_Wsaa_LoginCMSService"),String)
+            End Get
+        End Property
     End Class
 End Namespace
 
