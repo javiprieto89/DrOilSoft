@@ -3,7 +3,7 @@ Imports Microsoft.Office.Interop
 Imports System.IO
 Imports System.Data.SqlClient
 
-Public Class main
+Public Partial Class main
     Dim desde As Integer
     Dim hasta As Integer
     Dim pagina As Integer
