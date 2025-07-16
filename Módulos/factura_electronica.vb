@@ -166,6 +166,38 @@ Module factura
         codigoDeBarras = Cod & digitoVerificador
         Return codigoDeBarras
     End Function
+
+    Public Sub Consultar_Comprobante(ByVal pVenta As Integer, ByVal tipo_comprobante As Integer, ByVal nComprobante As String)
+        If Not inicialesFE(False) Then
+            MsgBox("Hubo un problema al inicializar el webservice, puede ser un problema de certificados", vbCritical + vbOKOnly, "Centrex")
+            Exit Sub
+        End If
+
+        Dim urlWsaa As String = "https://wsaa.afip.gov.ar/ws/services/LoginCms?WSDL"
+        Dim urlWsfe As String = "https://servicios1.afip.gov.ar/wsfev1/service.asmx"
+        Dim ticket As LoginTicket = ObtenerTicket("wsfe", urlWsaa, archivo_certificado, password_certificado)
+        Dim svc As New wsfev1.Service()
+        svc.Url = urlWsfe
+        Dim auth As New wsfev1.FEAuthRequest()
+        auth.Token = ticket.Token
+        auth.Sign = ticket.Sign
+        auth.Cuit = CLng(cuit_emisor)
+
+        Dim req As New wsfev1.FECompConsultaReq()
+        req.PtoVta = pVenta
+        req.CbteTipo = tipo_comprobante
+        req.CbteNro = CLng(nComprobante)
+
+        Dim resp As wsfev1.FECompConsultaResponse = svc.FECompConsultar(auth, req)
+
+        If resp.Errors Is Nothing Then
+            Dim respuestaCAE As String = "CAE consultado: " & resp.ResultGet.CodAutorizacion & vbCrLf
+            respuestaCAE += "Total: " & resp.ResultGet.ImpTotal.ToString()
+            MsgBox(respuestaCAE, vbInformation + vbOKOnly, "Centrex")
+        Else
+            MsgBox("Fallo la consulta con el siguiente error:" & resp.Errors(0).Msg)
+        End If
+    End Sub
     Public Function consultaUltimoComprobante(ByVal puntoVenta As String, ByVal tipoComprobante As String, ByVal esTest As Boolean) As Integer
         If Not inicialesFE(esTest) Then
             Return -1

@@ -116,6 +116,7 @@
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Security" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
   </ItemGroup>
@@ -543,6 +544,7 @@
     <Compile Include="Módulos\afip_native.vb" />
     <Compile Include="AfipNative\LoginTicket.vb" />
     <Compile Include="AfipNative\WsfeReference.vb" />
+    <Compile Include="AfipNative\WsaaReference.vb" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Formularios\advancesearch.resx">
