@@ -6,212 +6,72 @@ Module clientes
     Public Function info_cliente(ByVal id_cliente As String) As cliente
         Dim tmp As New cliente
         Dim sqlstr As String
+		Dim dt As DataTable = GetDataTable("SELECT * FROM clientes WHERE id_cliente = '" & id_cliente & "'")
 
-        sqlstr = "SELECT * FROM clientes WHERE id_cliente = '" + id_cliente + "'"
-
-        Try
-            'Crea y abre una nueva conexión
-            abrirdb(serversql, basedb, usuariodb, passdb)
-
-            'Propiedades del SqlCommand
-            Dim comando As New SqlCommand
-            With comando
-                .CommandType = CommandType.Text
-                .CommandText = sqlstr
-                .Connection = CN
+        If dt.Rows.Count > 0 Then
+            With dt.Rows(0)
+                tmp.id_cliente = .Item(0).ToString
+                tmp.dni = .Item(1).ToString
+                tmp.nombre = .Item(2).ToString
+                tmp.apellido = .Item(3).ToString
+                tmp.telefono = .Item(4).ToString
+                tmp.email = .Item(5).ToString
+                tmp.direccion = .Item(6).ToString
+                tmp.activo = .Item(7).ToString
+                tmp.id_pais = .Item(8).ToString
+                tmp.id_provincia = .Item(9).ToString
+                tmp.id_descuento = .Item(10).ToString
+                tmp.esInscripto = .Item(11).ToString
+                tmp.id_tipoDocumento = .Item(12).ToString
+                tmp.localidad = .Item(13).ToString
+                tmp.cp = .Item(14).ToString
             End With
-
-            Dim da As New SqlDataAdapter 'Crear nuevo SqlDataAdapter
-            Dim dataset As New DataSet 'Crear nuevo dataset
-
-            da.SelectCommand = comando
-
-            'llenar el dataset
-            da.Fill(dataset, "Tabla")
-            tmp.id_cliente = dataset.Tables("tabla").Rows(0).Item(0).ToString
-            tmp.dni = dataset.Tables("tabla").Rows(0).Item(1).ToString
-            tmp.nombre = dataset.Tables("tabla").Rows(0).Item(2).ToString
-            tmp.apellido = dataset.Tables("tabla").Rows(0).Item(3).ToString
-            tmp.telefono = dataset.Tables("tabla").Rows(0).Item(4).ToString
-            tmp.email = dataset.Tables("tabla").Rows(0).Item(5).ToString
-            tmp.direccion = dataset.Tables("tabla").Rows(0).Item(6).ToString
-            tmp.activo = dataset.Tables("tabla").Rows(0).Item(7).ToString
-            tmp.id_pais = dataset.Tables("tabla").Rows(0).Item(8).ToString
-            tmp.id_provincia = dataset.Tables("tabla").Rows(0).Item(9).ToString
-            tmp.id_descuento = dataset.Tables("tabla").Rows(0).Item(10).ToString
-            tmp.esInscripto = dataset.Tables("tabla").Rows(0).Item(11).ToString
-            tmp.id_tipoDocumento = dataset.Tables("tabla").Rows(0).Item(12).ToString
-            tmp.localidad = dataset.Tables("tabla").Rows(0).Item(13).ToString
-            tmp.cp = dataset.Tables("tabla").Rows(0).Item(14).ToString
-            cerrardb()
-            Return tmp
-        Catch ex As Exception
-            MsgBox(ex.Message.ToString)
-            tmp.nombre = "error"
-            cerrardb()
-            Return tmp
-        End Try
+		End If
+        Return tmp
     End Function
 
     Public Function addcliente(ByVal cl As cliente) As Boolean
-        abrirdb(serversql, basedb, usuariodb, passdb)
+        Dim sqlstr As String = "INSERT INTO clientes (dni, nombre, apellido, telefono, email, direccion, activo, id_pais, id_provincia, id_descuento, esInscripto, id_tipoDocumento, localidad, cp) " &
+                              "VALUES ('" & cl.dni & "', '" & cl.nombre & "', '" & cl.apellido & "', '" & cl.telefono & "', '" & cl.telefono & "', '" & cl.direccion & "', '" & cl.activo.ToString & "', '" & cl.id_pais.ToString & "', '" & cl.id_provincia.ToString & "', '" & cl.id_descuento.ToString & "', '" & cl.esInscripto.ToString & "', '" & cl.id_tipoDocumento.ToString & "', '" & cl.localidad & "', '" & cl.cp & "')"
 
-        Dim mytrans As SqlTransaction
-        Dim Comando As New SqlCommand
-        Dim sqlstr As String
 
-        mytrans = CN.BeginTransaction()
-
-        Try
-            sqlstr = "INSERT INTO clientes (dni, nombre, apellido, telefono, email, direccion, activo, id_pais, id_provincia, id_descuento, esInscripto, id_tipoDocumento, localidad, cp) " _
-                                      + "VALUES ('" + cl.dni + "', '" + cl.nombre + "', '" _
-            + cl.apellido + "', '" + cl.telefono + "', '" + cl.telefono + "', '" + cl.direccion + "', '" + cl.activo.ToString + "', '" + cl.id_pais.ToString + "', '" + cl.id_provincia.ToString + "', '" _
-            + cl.id_descuento.ToString + "', '" + cl.esInscripto.ToString + "', '" + cl.id_tipoDocumento.ToString + "', '" + cl.localidad + "', '" + cl.cp + "')"
-            Comando = New SqlCommand(sqlstr, CN)
-
-            Comando.Transaction = mytrans
-            Comando.ExecuteNonQuery()
-
-            mytrans.Commit()
-            cerrardb()
-            Return True
-        Catch ex As Exception
-            MsgBox(ex.Message)
-            cerrardb()
-            Return False
-        End Try
+        Return ExecuteNonQuery(sqlstr)
     End Function
 
     Public Function updatecliente(cl As cliente, Optional borra As Boolean = False) As Boolean
-        abrirdb(serversql, basedb, usuariodb, passdb)
-
-        Dim mytrans As SqlTransaction
-        Dim Comando As New SqlCommand
         Dim sqlstr As String
-        mytrans = CN.BeginTransaction()
+       
+	    If borra = True Then
+            sqlstr = "UPDATE clientes SET activo = '0' WHERE id_cliente = '" & cl.id_cliente.ToString & "'"
+        Else
+            sqlstr = "UPDATE clientes SET dni = '" & cl.dni & "', nombre = '" & cl.nombre & "', apellido = '" & cl.apellido & "', telefono = '" _
+                      & cl.telefono & "', email = '" & cl.email & "', direccion = '" & cl.direccion & "', activo = '" & cl.activo.ToString & "', id_pais = '" & cl.id_pais.ToString & "', " _
+                      & " id_provincia = '" & cl.id_provincia.ToString & "', id_descuento = '" & cl.id_descuento.ToString & "', esInscripto = '" & cl.esInscripto.ToString & "', " _
+                      & " id_tipoDocumento = '" & cl.id_tipoDocumento.ToString & "', localidad = '" & cl.localidad & "', cp = '" & cl.cp & "'" _
+                      & " WHERE id_cliente = '" & cl.id_cliente.ToString & "'"
+        End If
 
-        Try
-            If borra = True Then
-                sqlstr = "UPDATE clientes SET activo = '0' WHERE id_cliente = '" + cl.id_cliente.ToString + "'"
-
-            Else
-                sqlstr = "UPDATE clientes SET dni = '" + cl.dni + "', nombre = '" + cl.nombre + "', apellido = '" + cl.apellido + "', telefono = '" _
-                                               + cl.telefono + "', email = '" + cl.email + "', direccion = '" + cl.direccion + "', activo = '" + cl.activo.ToString + "', id_pais = '" + cl.id_pais.ToString + "', " _
-                                               + " id_provincia = '" + cl.id_provincia.ToString + "', id_descuento = '" + cl.id_descuento.ToString + "', esInscripto = '" + cl.esInscripto.ToString + "', " _
-                                               + " id_tipoDocumento = '" + cl.id_tipoDocumento.ToString + "', localidad = '" + cl.localidad + "', cp = '" + cl.cp + "'" _
-                                               + " WHERE id_cliente = '" + cl.id_cliente.ToString + "'"
-            End If
-
-            Comando = New SqlCommand(sqlstr, CN)
-
-            Comando.Transaction = mytrans
-            Comando.ExecuteNonQuery()
-
-            mytrans.Commit()
-            cerrardb()
-            Return True
-        Catch ex As Exception
-            MsgBox(ex.Message)
-            cerrardb()
-            Return False
-        End Try
+        Return ExecuteNonQuery(sqlstr)
     End Function
 
     Public Function borrarcliente(cl As cliente) As Boolean
-        abrirdb(serversql, basedb, usuariodb, passdb)
-
-        Dim mytrans As SqlTransaction
-        Dim Comando As New SqlCommand
-
-        mytrans = CN.BeginTransaction()
-
-        Try
-            Comando = New SqlCommand("DELETE FROM clientes WHERE id_cliente = '" + cl.id_cliente.ToString + "'", CN)
-            Comando.Transaction = mytrans
-            Comando.ExecuteNonQuery()
-
-            mytrans.Commit()
-            cerrardb()
-            Return True
-        Catch ex As Exception
-            MsgBox(ex.Message.ToString)
-            cerrardb()
-            Return False
-        End Try
+        Dim sqlstr As String = "DELETE FROM clientes WHERE id_cliente = '" & cl.id_cliente.ToString & "'"
+        Return ExecuteNonQuery(sqlstr)
     End Function
 
     Public Function existecliente(ByVal n As String, Optional ByVal a As String = "") As Integer
-        Dim tmp As New cliente
-
-        Dim sqlstr As String
-        sqlstr = "SELECT id_cliente FROM clientes WHERE nombre + apellido LIKE '%" + Trim(n.ToString) + Trim(a.ToString) + "%'"
-
-        Try
-            'Crea y abre una nueva conexión
-            abrirdb(serversql, basedb, usuariodb, passdb)
-
-            'Propiedades del SqlCommand
-            Dim comando As New SqlCommand
-            With comando
-                .CommandType = CommandType.Text
-                .CommandText = sqlstr
-                .Connection = CN
-            End With
-
-            Dim da As New SqlDataAdapter 'Crear nuevo SqlDataAdapter
-            Dim dataset As New DataSet 'Crear nuevo dataset
-
-            da.SelectCommand = comando
-
-            'llenar el dataset
-            da.Fill(dataset, "Tabla")
-            tmp.id_cliente = dataset.Tables("tabla").Rows(0).Item(0).ToString
-            If tmp.id_cliente = 0 Then
-                cerrardb()
-                Return -1
-            End If
-            Return tmp.id_cliente
-        Catch ex As Exception
-            tmp.nombre = "error"
-            cerrardb()
-            Return -1
-        End Try
+       Dim sqlstr As String = "SELECT id_cliente FROM clientes WHERE nombre + apellido LIKE '%" & Trim(n.ToString) & Trim(a.ToString) & "%'"
+       Dim dt As DataTable = GetDataTable(sqlstr)
+       If dt.Rows.Count = 0 Then Return -1
+       Return CInt(dt.Rows(0).Item(0))
     End Function
 
     Public Function existecliente(ByVal taxNumber As String) As Integer
-        Dim tmp As New cliente
-
-        Dim sqlstr As String
-        sqlstr = "SELECT id_cliente FROM clientes WHERE dni = '" + Trim(taxNumber.ToString) + "'"
-
-        Try
-            'Crea y abre una nueva conexión
-            abrirdb(serversql, basedb, usuariodb, passdb)
-
-            'Propiedades del SqlCommand
-            Dim comando As New SqlCommand
-            With comando
-                .CommandType = CommandType.Text
-                .CommandText = sqlstr
-                .Connection = CN
-            End With
-
-            Dim da As New SqlDataAdapter 'Crear nuevo SqlDataAdapter
-            Dim dataset As New DataSet 'Crear nuevo dataset
-
-            da.SelectCommand = comando
-
-            'llenar el dataset
-            da.Fill(dataset, "Tabla")
-            tmp.id_cliente = dataset.Tables("tabla").Rows(0).Item(0).ToString
-            If tmp.id_cliente = 0 Then Return -1
-            cerrardb()
-            Return tmp.id_cliente
-        Catch ex As Exception
-            tmp.nombre = "error"
-            cerrardb()
-            Return -1
-        End Try
+        Dim sqlstr As String = "SELECT id_cliente FROM clientes WHERE dni = '" & Trim(taxNumber.ToString) & "'"
+        Dim dt As DataTable = GetDataTable(sqlstr)
+		
+        If dt.Rows.Count = 0 Then Return -1
+        Return CInt(dt.Rows(0).Item(0))
     End Function
 
     Public Function consultaCcCliente(ByVal id_cliente As Integer, ByVal fecha_desde As Date, ByVal fecha_hasta As Date,

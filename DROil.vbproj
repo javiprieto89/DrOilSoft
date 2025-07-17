@@ -519,6 +519,8 @@
     <Compile Include="funciones\tipositems.vb" />
     <Compile Include="funciones\usuarios.vb" />
     <Compile Include="funciones\vendedores.vb" />
+	<Compile Include="funciones\Validaciones.vb" />
+    <Compile Include="funciones\db_utils.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
       <AutoGen>True</AutoGen>
@@ -534,14 +536,14 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="Módulos\archivos.vb" />
-    <Compile Include="Módulos\autoajuste.vb" />
-    <Compile Include="Módulos\configuracion_regional.vb" />
-    <Compile Include="Módulos\factura_electronica.vb" />
-    <Compile Include="Módulos\general.vb" />
-    <Compile Include="Módulos\LeeCotizacionDolar.vb" />
-    <Compile Include="Módulos\mconfig.vb" />
-    <Compile Include="Módulos\afip_native.vb" />
+    <Compile Include="Modulos\archivos.vb" />
+    <Compile Include="Modulos\autoajuste.vb" />
+    <Compile Include="Modulos\configuracion_regional.vb" />
+    <Compile Include="Modulos\factura_electronica.vb" />
+    <Compile Include="Modulos\general.vb" />
+    <Compile Include="Modulos\LeeCotizacionDolar.vb" />
+    <Compile Include="Modulos\mconfig.vb" />
+    <Compile Include="Modulos\afip_native.vb" />
     <Compile Include="AfipNative\LoginTicket.vb" />
     <Compile Include="AfipNative\WsfeReference.vb" />
     <Compile Include="AfipNative\WsaaReference.vb" />

@@ -1,4 +1,4 @@
-'Módulos/afip_native.vb
+'Modulos/afip_native.vb
 Imports System.Security
 Module afip_native
     Public Function ObtenerTicket(service As String, url As String, cert As String, password As String) As LoginTicket
