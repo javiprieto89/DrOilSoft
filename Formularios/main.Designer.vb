@@ -82,7 +82,6 @@ Partial Class main
         Dim TreeNode57 As System.Windows.Forms.TreeNode = New System.Windows.Forms.TreeNode("Dr. Oil", New System.Windows.Forms.TreeNode() {TreeNode25, TreeNode27, TreeNode38, TreeNode47, TreeNode55, TreeNode56})
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(main))
         Me.cmd_add = New System.Windows.Forms.Button()
-        Me.lsview = New System.Windows.Forms.ListView()
         Me.cms_general = New System.Windows.Forms.ContextMenuStrip(Me.components)
         Me.EditarToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.BorrarToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
@@ -143,16 +142,6 @@ Partial Class main
         Me.cmd_add.Text = "Agregar"
         Me.cmd_add.UseVisualStyleBackColor = True
         '
-        'lsview
-        '
-        Me.lsview.ContextMenuStrip = Me.cms_general
-        Me.lsview.HideSelection = False
-        Me.lsview.Location = New System.Drawing.Point(265, 88)
-        Me.lsview.Name = "lsview"
-        Me.lsview.Size = New System.Drawing.Size(1398, 802)
-        Me.lsview.TabIndex = 2
-        Me.lsview.UseCompatibleStateImageBehavior = False
-
         'dgv_main
         '
         Me.dgv_main = New System.Windows.Forms.DataGridView()
@@ -641,7 +630,6 @@ Partial Class main
         Me.Controls.Add(Me.chk_historicos)
         Me.Controls.Add(Me.txt_search)
         Me.Controls.Add(Me.lblbusqueda)
-        Me.Controls.Add(Me.lsview)
         Me.Controls.Add(Me.dgv_main)
         Me.Controls.Add(Me.cmd_add)
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
@@ -662,7 +650,6 @@ Partial Class main
     End Sub
     'Friend WithEvents DrOil As WindowsApplication1.DrOil
     Friend WithEvents cmd_add As System.Windows.Forms.Button
-    Friend WithEvents lsview As System.Windows.Forms.ListView
     Friend WithEvents dgv_main As System.Windows.Forms.DataGridView
     'Friend WithEvents ClienteTableAdapter1 As WindowsApplication1.Database1DataSetTableAdapters.clienteTableAdapter
     'Friend WithEvents Database1DataSet As WindowsApplication1.Database1DataSet
