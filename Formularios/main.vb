@@ -530,21 +530,36 @@ Public Partial Class main
             nRegs = dgv_main.Rows.Count
             tPaginas = Math.Ceiling(nRegs / itXPage)
             txt_nPage.Text = pagina & " / " & tPaginas
-            'If tabla = "autos" Then
-            'ElseIf tabla = "items" Then
-            'ElseIf tabla = "items_full" Then
-            If tabla = "archivoConsultas" Then
+
+            If tabla = "autos" Then
+                autosConDeudaDG(dgv_main, Color.Red)
+            ElseIf tabla = "items" Then
+                resaltarcolumnaDG(dgv_main, lightItemCol, Color.Red)
+                pintaStockItemsDG(dgv_main, clrMinimo)
+            ElseIf tabla = "items_full" Then
+                resaltarcolumnaDG(dgv_main, lightItemCol, Color.Red)
+            ElseIf tabla = "archivoConsultas" Then
                 dgv_main.Columns(0).Width = 50
-                'ElseIf tabla = "registros_stock" Then
-                'ElseIf tabla = "pedidos" Then
-                'If activo Then
-                'Else
-                'End If
-                'ElseIf tabla = "pedidos_hoy" Then
-                'ElseIf tabla = "casos" Or tabla = "casos_hoy" Then
-                'If activo Then
-                'Else
-                'End If
+            ElseIf tabla = "registros_stock" Then
+                resaltarcolumnaDG(dgv_main, lightRegStock, Color.Red)
+            ElseIf tabla = "pedidos" Then
+                If activo Then
+                    resaltarcolumnaDG(dgv_main, 5, Color.Red)
+                Else
+                    resaltarcolumnaDG(dgv_main, 6, Color.Red)
+                End If
+            ElseIf tabla = "pedidos_hoy" Then
+                resaltarcolumnaDG(dgv_main, 6, Color.Red)
+                resaltarPedidosInactivosDG(dgv_main, Color.Red)
+            ElseIf tabla = "casos" Or tabla = "casos_hoy" Then
+                If activo Then
+                    resaltarcolumnaDG(dgv_main, 5, Color.Red)
+                Else
+                    resaltarcolumnaDG(dgv_main, 6, Color.Red)
+                End If
+                casosConDeudaDG(dgv_main, Color.Red)
+                'dgv_main.Columns(13).Width = 0
+                'dgv_main.Columns(14).Width = 0
             End If
         End If
     End Sub
@@ -561,14 +576,37 @@ Public Partial Class main
             nRegs = dgv_main.Rows.Count
             tPaginas = Math.Ceiling(nRegs / itXPage)
             txt_nPage.Text = pagina & " / " & tPaginas
-            'If tabla = "autos" Then
-            'ElseIf tabla = "items" Then
-            'ElseIf tabla = "items_full" Then
-            'ElseIf tabla = "registros_stock" Then
-            'ElseIf tabla = "pedidos" Or tabla = "pedidos_hoy" Then
 
-            'ElseIf tabla = "casos" Or tabla = "casos_hoy" Then
-            'End If
+            If tabla = "autos" Then
+                autosConDeudaDG(dgv_main, Color.Red)
+            ElseIf tabla = "items" Then
+                resaltarcolumnaDG(dgv_main, lightItemCol, Color.Red)
+                pintaStockItemsDG(dgv_main, clrMinimo)
+            ElseIf tabla = "items_full" Then
+                resaltarcolumnaDG(dgv_main, lightItemCol, Color.Red)
+            ElseIf tabla = "archivoConsultas" Then
+                dgv_main.Columns(0).Width = 50
+            ElseIf tabla = "registros_stock" Then
+                resaltarcolumnaDG(dgv_main, lightRegStock, Color.Red)
+            ElseIf tabla = "pedidos" Then
+                If activo Then
+                    resaltarcolumnaDG(dgv_main, 5, Color.Red)
+                Else
+                    resaltarcolumnaDG(dgv_main, 6, Color.Red)
+                End If
+            ElseIf tabla = "pedidos_hoy" Then
+                resaltarcolumnaDG(dgv_main, 6, Color.Red)
+                resaltarPedidosInactivosDG(dgv_main, Color.Red)
+            ElseIf tabla = "casos" Or tabla = "casos_hoy" Then
+                If activo Then
+                    resaltarcolumnaDG(dgv_main, 5, Color.Red)
+                Else
+                    resaltarcolumnaDG(dgv_main, 6, Color.Red)
+                End If
+                casosConDeudaDG(dgv_main, Color.Red)
+                'dgv_main.Columns(13).Width = 0
+                'dgv_main.Columns(14).Width = 0
+            End If
         End If
     End Sub
 
