@@ -581,6 +581,17 @@ Module pedidos
         lsview.Refresh()
     End Sub
 
+    Public Sub resaltarPedidosInactivosDG(ByVal dg As DataGridView, ByVal clr As Color)
+        For Each row As DataGridViewRow In dg.Rows
+            If row.Cells(9).Value.ToString() = "False" Then
+                row.Cells(0).Style.BackColor = clr
+                row.Cells(0).Style.Font = New Font(dg.Font, FontStyle.Bold)
+            End If
+        Next
+        dg.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.ColumnHeader)
+        dg.Refresh()
+    End Sub
+
     Public Sub resaltarCasosInactivos(ByVal lsview As ListView, ByVal clr As Color)
         Dim i As Integer
         Dim x As Integer = 0
@@ -592,6 +603,17 @@ Module pedidos
         Next
         lsview.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize)
         lsview.Refresh()
+    End Sub
+
+    Public Sub resaltarCasosInactivosDG(ByVal dg As DataGridView, ByVal clr As Color)
+        For Each row As DataGridViewRow In dg.Rows
+            If row.Cells(13).Value.ToString() = "False" Then
+                row.Cells(0).Style.BackColor = clr
+                row.Cells(0).Style.Font = New Font(dg.Font, FontStyle.Bold)
+            End If
+        Next
+        dg.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.ColumnHeader)
+        dg.Refresh()
     End Sub
 
     Public Function idremitoAsociado(ByVal id_pedido As String) As Integer

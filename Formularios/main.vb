@@ -9,7 +9,6 @@ Public Partial Class main
     Dim pagina As Integer
     Dim nRegs As Integer
     Dim tPaginas As Integer
-    Dim orderCol As ColumnClickEventArgs = Nothing
 
     Private Sub Main_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         Me.Visible = False
@@ -140,7 +139,7 @@ Public Partial Class main
         t_GetDolar_Tick(Nothing, Nothing)
 
         cmd_add.Enabled = False
-        lsview.Visible = False
+        dgv_main.Visible = False
         txt_search.Enabled = False
         lbl_borrarbusqueda.Enabled = False
         chk_historicos.Enabled = False
@@ -157,7 +156,7 @@ Public Partial Class main
         If e.Button = Windows.Forms.MouseButtons.Left Then
             If cmd_add.Enabled = False Then
                 cmd_add.Enabled = True
-                lsview.Visible = True
+                dgv_main.Visible = True
                 txt_search.Enabled = True
                 lbl_borrarbusqueda.Enabled = True
                 chk_historicos.Enabled = True
@@ -192,13 +191,13 @@ Public Partial Class main
             Select Case tabla
                 Case Is = "root"
                     cmd_add.Enabled = False
-                    lsview.Visible = False
+                    dgv_main.Visible = False
                     txt_search.Enabled = False
                     lbl_borrarbusqueda.Enabled = False
                     chk_historicos.Enabled = False
                     pic.Visible = True
                 Case Is = "archivos"
-                    lsview.Clear()
+                    dgv_main.DataSource = Nothing
                 Case Is = "condiciones"
                     sqlstr = "SELECT c.id_condicion AS 'ID', c.condicion AS 'Condición', c.vencimiento AS 'Vencimiento (días)', " +
                                 "c.recargo AS 'Recargo', t.tarjeta AS 'Tarjeta', CASE WHEN c.activo = 1 THEN 'Si' ELSE 'No' END AS 'Activo' " &
@@ -526,47 +525,41 @@ Public Partial Class main
         End If
 
         If sqlstr <> "" Then
-            If tabla = "clientes" Then
-                cargar_datagrid(dgv_main, sqlstr, basedb)
-                dgv_main.Visible = True
-                lsview.Visible = False
-            Else
-                Cargar_listview(lsview, sqlstr, basedb, desde, hasta, nRegs, tPaginas, pagina, txt_nPage, orderCol)
-                dgv_main.Visible = False
-                lsview.Visible = True
+            cargar_datagrid(dgv_main, sqlstr, basedb)
+            dgv_main.Visible = True
+            nRegs = dgv_main.Rows.Count
+            tPaginas = Math.Ceiling(nRegs / itXPage)
+            txt_nPage.Text = pagina & " / " & tPaginas
+            If tabla = "autos" Then
+                autosConDeudaDG(dgv_main, Color.Red)
+            ElseIf tabla = "items" Then
+                resaltarcolumnaDG(dgv_main, lightItemCol, Color.Red)
+                pintaStockItemsDG(dgv_main, clrMinimo)
+            ElseIf tabla = "items_full" Then
+                resaltarcolumnaDG(dgv_main, lightItemCol, Color.Red)
+            ElseIf tabla = "archivoConsultas" Then
+                dgv_main.Columns(0).Width = 50
+            ElseIf tabla = "registros_stock" Then
+                resaltarcolumnaDG(dgv_main, lightRegStock, Color.Red)
+            ElseIf tabla = "pedidos" Then
+                If activo Then
+                    resaltarcolumnaDG(dgv_main, 5, Color.Red)
+                Else
+                    resaltarcolumnaDG(dgv_main, 6, Color.Red)
+                End If
+            ElseIf tabla = "pedidos_hoy" Then
+                resaltarcolumnaDG(dgv_main, 6, Color.Red)
+                resaltarPedidosInactivosDG(dgv_main, Color.Red)
+            ElseIf tabla = "casos" Or tabla = "casos_hoy" Then
+                If activo Then
+                    resaltarcolumnaDG(dgv_main, 5, Color.Red)
+                Else
+                    resaltarcolumnaDG(dgv_main, 6, Color.Red)
+                End If
+                casosConDeudaDG(dgv_main, Color.Red)
+                'dgv_main.Columns(13).Width = 0
+                'dgv_main.Columns(14).Width = 0
             End If
-            'If tabla = "autos" Then
-            ' autosConDeuda(lsview, Color.Red)
-            'ElseIf tabla = "items" Then
-            'resaltarcolumna(lsview, lightItemCol, Color.Red)
-            'pintaStockItems(lsview, Color.Orange)
-            'ElseIf tabla = "items_full" Then
-            'resaltarcolumna(lsview, lightItemCol, Color.Red)
-            If tabla = "archivoConsultas" Then
-                lsview.Columns(0).Width = 50
-                'ElseIf tabla = "registros_stock" Then
-                ' resaltarcolumna(lsview, lightRegStock, Color.Red)
-                'ElseIf tabla = "pedidos" Then
-                'If activo Then
-                'resaltarcolumna(lsview, 5, Color.Red)
-                'Else
-                '    resaltarcolumna(lsview, 6, Color.Red)
-                'End If
-                'ElseIf tabla = "pedidos_hoy" Then
-                'resaltarcolumna(lsview, 6, Color.Red)
-                'resaltarPedidosInactivos(lsview, Color.Red)
-                'ElseIf tabla = "casos" Or tabla = "casos_hoy" Then
-                'If activo Then
-                '    resaltarcolumna(lsview, 5, Color.Red, 1)
-                'Else
-                '    resaltarcolumna(lsview, 6, Color.Red, 1)
-                'End If
-                'casosConDeuda(lsview, Color.Red)
-                'lsview.Columns(13).Width = 0
-                'lsview.Columns(14).Width = 0
-                ' If tabla = "casos_hoy" Then resaltarCasosInactivos(lsview, Color.Red)
-            End If
-            lsview.Visible = True
         End If
     End Sub
 
@@ -575,28 +568,43 @@ Public Partial Class main
             Dim txtsearch As String = Microsoft.VisualBasic.Replace(txt_search.Text, " ", "%")
             Dim sqlstr As String = sqlstrbuscar(txtsearch)
 
-            'Cargar_listview(lsview, sqlstr, basedb)
             desde = 1
             pagina = 1
-            Cargar_listview(lsview, sqlstr, basedb, desde, hasta, nRegs, tPaginas, pagina, txt_nPage, orderCol)
-            'If tabla = "items" Then resaltarcolumna(lsview, lightItemCol, Color.Red)
-            'If tabla = "autos" Then
-            '    autosConDeuda(lsview, Color.Red)
-            'ElseIf tabla = "items" Then
-            '    resaltarcolumna(lsview, lightItemCol, Color.Red)
-            '    pintaStockItems(lsview, Color.Orange)
-            'ElseIf tabla = "items_full" Then
-            '    resaltarcolumna(lsview, lightItemCol, Color.Red)
-            'ElseIf tabla = "registros_stock" Then
-            '    resaltarcolumna(lsview, lightRegStock, Color.Red)
-            'ElseIf tabla = "pedidos" Or tabla = "pedidos_hoy" Then
-            '    resaltarcolumna(lsview, 4, Color.Red)
-            '    If tabla = "pedidos_hoy" Then resaltarPedidosInactivos(lsview, Color.Red)
-
-            'ElseIf tabla = "casos" Or tabla = "casos_hoy" Then
-            '    resaltarcolumna(lsview, 5, Color.Red, 1)
-            '    casosConDeuda(lsview, Color.Red)
-            'End If
+            cargar_datagrid(dgv_main, sqlstr, basedb)
+            dgv_main.Visible = True
+            nRegs = dgv_main.Rows.Count
+            tPaginas = Math.Ceiling(nRegs / itXPage)
+            txt_nPage.Text = pagina & " / " & tPaginas
+            If tabla = "autos" Then
+                autosConDeudaDG(dgv_main, Color.Red)
+            ElseIf tabla = "items" Then
+                resaltarcolumnaDG(dgv_main, lightItemCol, Color.Red)
+                pintaStockItemsDG(dgv_main, clrMinimo)
+            ElseIf tabla = "items_full" Then
+                resaltarcolumnaDG(dgv_main, lightItemCol, Color.Red)
+            ElseIf tabla = "archivoConsultas" Then
+                dgv_main.Columns(0).Width = 50
+            ElseIf tabla = "registros_stock" Then
+                resaltarcolumnaDG(dgv_main, lightRegStock, Color.Red)
+            ElseIf tabla = "pedidos" Then
+                If activo Then
+                    resaltarcolumnaDG(dgv_main, 5, Color.Red)
+                Else
+                    resaltarcolumnaDG(dgv_main, 6, Color.Red)
+                End If
+            ElseIf tabla = "pedidos_hoy" Then
+                resaltarcolumnaDG(dgv_main, 6, Color.Red)
+                resaltarPedidosInactivosDG(dgv_main, Color.Red)
+            ElseIf tabla = "casos" Or tabla = "casos_hoy" Then
+                If activo Then
+                    resaltarcolumnaDG(dgv_main, 5, Color.Red)
+                Else
+                    resaltarcolumnaDG(dgv_main, 6, Color.Red)
+                End If
+                casosConDeudaDG(dgv_main, Color.Red)
+                'dgv_main.Columns(13).Width = 0
+                'dgv_main.Columns(14).Width = 0
+            End If
         End If
     End Sub
 
@@ -664,22 +672,12 @@ Public Partial Class main
         actualizarlsv()
     End Sub
 
-    Private Sub lsview_ColumnClick(sender As Object, e As ColumnClickEventArgs) Handles lsview.ColumnClick
-        orderCol = e
-        Me.lsview.ListViewItemSorter = New ListViewItemComparer(e.Column)
-    End Sub
-
-    Private Sub listview_DoubleClick(sender As Object, e As EventArgs) Handles lsview.DoubleClick
+    Private Sub dgv_main_DoubleClick(sender As Object, e As EventArgs) Handles dgv_main.DoubleClick
         If borrado = False Then edicion = True
 
         Dim seleccionado As String
-        If dgv_main.Visible Then
-            If dgv_main.Rows.Count = 0 Then Exit Sub
-            seleccionado = dgv_main.CurrentRow.Cells(0).Value.ToString()
-        Else
-            If lsview.SelectedIndices.Count = 0 Then Exit Sub
-            seleccionado = lsview.SelectedItems.Item(0).Text
-        End If
+        If dgv_main.Rows.Count = 0 Then Exit Sub
+        seleccionado = dgv_main.CurrentRow.Cells(0).Value.ToString()
         Select Case tabla
             Case "condiciones"
                 edita_condicion = info_condicion(seleccionado)
@@ -782,21 +780,22 @@ Public Partial Class main
         actualizarlsv()
     End Sub
     Private Sub EditarToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles EditarToolStripMenuItem.Click
-        listview_DoubleClick(Nothing, Nothing)
+        dgv_main_DoubleClick(Nothing, Nothing)
         actualizarlsv()
     End Sub
 
     Private Sub BorrarToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles BorrarToolStripMenuItem.Click
         'borrar el item
         borrado = True
-        listview_DoubleClick(Nothing, Nothing)
+        dgv_main_DoubleClick(Nothing, Nothing)
         borrado = False
         actualizarlsv()
     End Sub
 
     Private Sub TerminarToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles TerminarToolStripMenuItem.Click
         If MsgBox("¿Está seguro de que desea cerrar el caso?", vbYesNo + vbQuestion, "DrOil") = MsgBoxResult.Yes Then
-            Dim seleccionado As String = lsview.SelectedItems.Item(0).Text
+            If dgv_main.Rows.Count = 0 Then Exit Sub
+            Dim seleccionado As String = dgv_main.CurrentRow.Cells(0).Value.ToString()
             Dim c As New pedido
             c.id_pedido = seleccionado
             cerrarpedido(c)
@@ -804,7 +803,7 @@ Public Partial Class main
         actualizarlsv()
     End Sub
 
-    Private Sub lsview_MouseDown(sender As Object, e As MouseEventArgs) Handles lsview.MouseDown
+    Private Sub dgv_main_MouseDown(sender As Object, e As MouseEventArgs) Handles dgv_main.MouseDown
         If e.Button = Windows.Forms.MouseButtons.Right Then
             cms_general.Items(0).Visible = True
             cms_general.Items(2).Visible = False
@@ -881,7 +880,8 @@ Public Partial Class main
 
     Private Sub TerminarPedidoToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles TerminarPedidoToolStripMenuItem.Click
         If MsgBox("¿Está seguro de que desea cerrar el pedido?", vbYesNo + vbQuestion, "DrOil") = MsgBoxResult.Yes Then
-            Dim seleccionado As String = lsview.SelectedItems.Item(0).Text
+            If dgv_main.Rows.Count = 0 Then Exit Sub
+            Dim seleccionado As String = dgv_main.CurrentRow.Cells(0).Value.ToString()
             Dim p As New pedido
             p.id_pedido = seleccionado
             cerrarpedido(p)
@@ -895,7 +895,8 @@ Public Partial Class main
     End Sub
 
     Private Sub CrearCasoToolStripMenuItem_Click(sender As Object, e As EventArgs)
-        Dim seleccionado As String = lsview.SelectedItems.Item(0).Text
+        If dgv_main.Rows.Count = 0 Then Exit Sub
+        Dim seleccionado As String = dgv_main.CurrentRow.Cells(0).Value.ToString()
 
         If tabla = "pedidos" Or tabla = "pedidos_hoy" Then
             pedidoACaso = True
@@ -960,16 +961,15 @@ Public Partial Class main
     '            Dim txtsearch As String = Microsoft.VisualBasic.Replace(txt_search.Text, " ", "%")
     '    End Select
 
-    '    'cargar_listview(lsview, sqlstr, basedb)
     '    actualizarlsv()
-    '    If tabla = "items" Then resaltarcolumna(lsview, lightItemCol, Color.Red)
     '    busquedaAvanzada = False
     'End Sub
 
     Private Sub DeshabilitarItemToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles DeshabilitarItemToolStripMenuItem.Click
         'Desactivar/activar item
 
-        Dim seleccionado As Integer = lsview.SelectedItems.Item(0).Text
+        If dgv_main.Rows.Count = 0 Then Exit Sub
+        Dim seleccionado As Integer = CInt(dgv_main.CurrentRow.Cells(0).Value)
         Dim i As New item
         i = info_item(seleccionado)
 
@@ -990,7 +990,8 @@ Public Partial Class main
 
     Private Sub MostrarFacturaToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles MostrarFacturaToolStripMenuItem.Click
         Dim seleccionado As String
-        seleccionado = lsview.SelectedItems.Item(0).Text
+        If dgv_main.Rows.Count = 0 Then Exit Sub
+        seleccionado = dgv_main.CurrentRow.Cells(0).Value.ToString()
         'Dim p As New pedido
 
         'If p.esCaso Then
@@ -1040,7 +1041,7 @@ Public Partial Class main
         detectaTeclas(e)
     End Sub
 
-    Private Sub lsview_KeyUp(sender As Object, e As KeyEventArgs) Handles lsview.KeyUp
+    Private Sub dgv_main_KeyUp(sender As Object, e As KeyEventArgs) Handles dgv_main.KeyUp
         detectaTeclas(e)
     End Sub
 
@@ -1233,7 +1234,8 @@ Public Partial Class main
         'Dim p As New pedido
         'p = info_pedido(seleccionado)
         'id = p.id_pedido
-        seleccionado = lsview.SelectedItems.Item(0).Text
+        If dgv_main.Rows.Count = 0 Then Exit Sub
+        seleccionado = dgv_main.CurrentRow.Cells(0).Value.ToString()
 
         idUnico = Generar_ID_Unico()
 
@@ -1253,11 +1255,7 @@ Public Partial Class main
     End Sub
 
     Private Sub dgv_main_CellDoubleClick(sender As Object, e As DataGridViewCellEventArgs) Handles dgv_main.CellDoubleClick
-        listview_DoubleClick(sender, e)
-    End Sub
-
-    Private Sub dgv_main_MouseDown(sender As Object, e As MouseEventArgs) Handles dgv_main.MouseDown
-        lsview_MouseDown(sender, e)
+        dgv_main_DoubleClick(sender, e)
     End Sub
 
     'Private Sub txt_nPage_Leave(sender As Object, e As EventArgs) Handles txt_nPage.Leave
