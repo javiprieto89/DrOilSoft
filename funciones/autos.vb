@@ -140,6 +140,17 @@ Module autos
         lsview.Refresh()
     End Sub
 
+    Public Sub autosConDeudaDG(ByVal dg As DataGridView, ByVal clr As Color)
+        For Each row As DataGridViewRow In dg.Rows
+            If row.Cells(8).Value.ToString() = "Si" Then
+                row.Cells(0).Style.BackColor = clr
+                row.Cells(0).Style.Font = New Font(dg.Font, FontStyle.Bold)
+            End If
+        Next
+        dg.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.ColumnHeader)
+        dg.Refresh()
+    End Sub
+
     Public Function existeAuto(ByVal p As String) As Integer
         Dim tmp As New auto
 
