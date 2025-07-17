@@ -1213,7 +1213,7 @@ Module generales
 
     Public Sub cargar_datagrid(ByRef dataGrid As DataGridView, ByVal sqlstr As String, ByVal db As String)
         Try
-            'Crea y abre una nueva conexión            
+            'Crea y abre una nueva conexión
             abrirdb(serversql, db, usuariodb, passdb)
 
             'Propiedades del SqlCommand
@@ -1249,6 +1249,50 @@ Module generales
             dataGrid.Height = dataGrid.Height - 1
             dataGrid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None
 
+            dataGrid.Refresh()
+
+        Catch ex As Exception
+            MsgBox(ex.Message.ToString)
+            cerrardb()
+        End Try
+    End Sub
+
+    'Carga datos en un DataGridView usando SqlDataReader y soporta paginación
+    Public Sub cargar_datagrid_paged(ByRef dataGrid As DataGridView, ByVal sqlstr As String, ByVal db As String, ByVal offset As Integer, ByVal limite As Integer, ByRef total As Integer)
+        Try
+            abrirdb(serversql, db, usuariodb, passdb)
+
+            Dim orderPos As Integer = LCase(sqlstr).LastIndexOf("order by")
+            Dim baseQuery As String = sqlstr
+            Dim orderClause As String = ""
+            If orderPos <> -1 Then
+                baseQuery = sqlstr.Substring(0, orderPos)
+                orderClause = sqlstr.Substring(orderPos)
+            End If
+
+            Dim countCmd As New SqlCommand("SELECT COUNT(*) FROM (" & baseQuery & ") AS q", CN)
+            total = CInt(countCmd.ExecuteScalar())
+
+            Dim pagedSql As String = baseQuery & orderClause & " OFFSET " & offset & " ROWS FETCH NEXT " & limite & " ROWS ONLY"
+            Dim cmd As New SqlCommand(pagedSql, CN)
+            Dim reader As SqlDataReader = cmd.ExecuteReader()
+            Dim tabla As New DataTable
+            tabla.Load(reader)
+            dataGrid.DataSource = tabla
+            dataGrid.RowsDefaultCellStyle.BackColor = Color.White
+            dataGrid.AlternatingRowsDefaultCellStyle.BackColor = Color.AliceBlue
+            cerrardb()
+
+            Dim i As Integer = 0
+            For Each columna As DataGridViewColumn In dataGrid.Columns
+                dataGrid.Columns(columna.Name.ToString).DisplayIndex = i
+                i += 1
+            Next
+
+            If dataGrid.Name = "dg_viewPedido" Then dataGrid.Columns(1).Visible = False
+            dataGrid.Height += 1
+            dataGrid.Height -= 1
+            dataGrid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None
             dataGrid.Refresh()
 
         Catch ex As Exception
