@@ -602,9 +602,8 @@ Public Partial Class main
         End If
 
         If sqlstr <> "" Then
-            cargar_datagrid(dgv_main, sqlstr, basedb)
+            cargar_datagrid_paged(dgv_main, sqlstr, basedb, desde - 1, itXPage, nRegs)
             dgv_main.Visible = True
-            nRegs = dgv_main.Rows.Count
             tPaginas = Math.Ceiling(nRegs / itXPage)
             txt_nPage.Text = pagina & " / " & tPaginas
 
@@ -619,9 +618,8 @@ Public Partial Class main
 
             desde = 1
             pagina = 1
-            cargar_datagrid(dgv_main, sqlstr, basedb)
+            cargar_datagrid_paged(dgv_main, sqlstr, basedb, 0, itXPage, nRegs)
             dgv_main.Visible = True
-            nRegs = dgv_main.Rows.Count
             tPaginas = Math.Ceiling(nRegs / itXPage)
             txt_nPage.Text = pagina & " / " & tPaginas
 
@@ -1193,40 +1191,42 @@ Public Partial Class main
     End Sub
 
     Private Sub cmd_first_Click(sender As Object, e As EventArgs) Handles cmd_first.Click
+        pagina = 1
         desde = 1
         hasta = itXPage
-        pagina = 1
         actualizarlsv()
     End Sub
 
     Private Sub cmd_prev_Click(sender As Object, e As EventArgs) Handles cmd_prev.Click
         If pagina = 1 Then Exit Sub
-        desde -= itXPage
-        hasta -= itXPage
         pagina -= 1
+        desde -= itXPage
+        If desde < 1 Then desde = 1
+        hasta = desde + itXPage - 1
         actualizarlsv()
     End Sub
 
     Private Sub Cmd_next_Click(sender As Object, e As EventArgs) Handles cmd_next.Click
-        If pagina = Math.Ceiling(nRegs / itXPage) Then Exit Sub
-        desde += itXPage
-        hasta += itXPage
+        If pagina = tPaginas Then Exit Sub
         pagina += 1
+        desde += itXPage
+        hasta = desde + itXPage - 1
         actualizarlsv()
     End Sub
 
     Private Sub Cmd_go_Click(sender As Object, e As EventArgs) Handles cmd_go.Click
         'pagina = Strings.Left(txt_nPage.Text, InStr(txt_nPage.Text, " / "))
         pagina = txt_nPage.Text
+        If pagina < 1 Then pagina = 1
         If pagina > tPaginas Then pagina = tPaginas
-        desde = pagina * itXPage
-        hasta = desde + itXPage
+        desde = ((pagina - 1) * itXPage) + 1
+        hasta = desde + itXPage - 1
         actualizarlsv()
     End Sub
 
     Private Sub cmd_last_Click(sender As Object, e As EventArgs) Handles cmd_last.Click
         pagina = tPaginas
-        desde = nRegs - itXPage
+        desde = ((pagina - 1) * itXPage) + 1
         hasta = nRegs
         actualizarlsv()
     End Sub
