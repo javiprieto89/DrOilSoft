@@ -1,45 +1,22 @@
-﻿Imports System.Data.SqlClient
+'funciones/consultasSIAP.vb
+Imports System.Data.SqlClient
 Module consultasSIAP
-    ' ************************************ FUNCIONES DE CONSULTAS DE SIAP **********************
+    ' ************************************ FUNCIONES DE CONSULTAS DE SIAP ****************
     Public Function info_consultaSIAP(ByVal id_consulta As Integer) As consultaSIAP
         Dim tmp As New consultaSIAP
-        Dim sqlstr As String
-
-        Try
-            'Crea y abre una nueva conexión
-            abrirdb(serversql, basedb, usuariodb, passdb)
-
-            sqlstr = "SELECT c.id_consultaSiap, c.nombre, c.consulta, c.excel, c.txt, c.activo FROM consultas_SIAP AS c WHERE c.id_consultaSiap = '" + id_consulta.ToString + "'"
-
-            'Propiedades del SqlCommand
-            Dim comando As New SqlCommand
-            With comando
-                .CommandType = CommandType.Text
-                .CommandText = sqlstr
-                .Connection = CN
+        Dim sqlstr As String = "SELECT c.id_consultaSiap, c.nombre, c.consulta, c.excel, c.txt, c.activo FROM consultas_SIAP AS c WHERE c.id_consultaSiap = '" & id_consulta.ToString & "'"
+        Dim dt As DataTable = GetDataTable(sqlstr)
+        If dt.Rows.Count > 0 Then
+            With dt.Rows(0)
+                tmp.id_consulta = .Item(0).ToString
+                tmp.nombre = .Item(1).ToString
+                tmp.consulta = .Item(2).ToString
+                tmp.excel = .Item(3).ToString
+                tmp.txt = .Item(4).ToString
+                tmp.activo = .Item(5).ToString
             End With
-
-            Dim da As New SqlDataAdapter 'Crear nuevo SqlDataAdapter
-            Dim dataset As New DataSet 'Crear nuevo dataset
-
-            da.SelectCommand = comando
-
-            'llenar el dataset
-            da.Fill(dataset, "Tabla")
-            tmp.id_consulta = dataset.Tables("tabla").Rows(0).Item(0).ToString
-            tmp.nombre = dataset.Tables("tabla").Rows(0).Item(1).ToString
-            tmp.consulta = dataset.Tables("tabla").Rows(0).Item(2).ToString
-            tmp.excel = dataset.Tables("tabla").Rows(0).Item(3).ToString
-            tmp.txt = dataset.Tables("tabla").Rows(0).Item(4).ToString
-            tmp.activo = dataset.Tables("tabla").Rows(0).Item(5).ToString
-            cerrardb()
-            Return tmp
-        Catch ex As Exception
-            MsgBox(ex.Message.ToString)
-            tmp.nombre = "error"
-            cerrardb()
-            Return tmp
-        End Try
+        End If
+        Return tmp
     End Function
-    ' ************************************ FUNCIONES DE CONSULTAS DE SIAP **********************
+    ' ************************************ FUNCIONES DE CONSULTAS DE SIAP ****************
 End Module
