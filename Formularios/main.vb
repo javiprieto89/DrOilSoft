@@ -252,6 +252,7 @@ Public Partial Class main
         End If
 
         dgv_main.ResumeLayout()
+
         dgv_main.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.ColumnHeader)
         dgv_main.Refresh()
     End Sub
