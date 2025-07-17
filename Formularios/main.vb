@@ -530,6 +530,7 @@ Public Partial Class main
             nRegs = dgv_main.Rows.Count
             tPaginas = Math.Ceiling(nRegs / itXPage)
             txt_nPage.Text = pagina & " / " & tPaginas
+
             If tabla = "autos" Then
                 autosConDeudaDG(dgv_main, Color.Red)
             ElseIf tabla = "items" Then
@@ -575,6 +576,7 @@ Public Partial Class main
             nRegs = dgv_main.Rows.Count
             tPaginas = Math.Ceiling(nRegs / itXPage)
             txt_nPage.Text = pagina & " / " & tPaginas
+
             If tabla = "autos" Then
                 autosConDeudaDG(dgv_main, Color.Red)
             ElseIf tabla = "items" Then
