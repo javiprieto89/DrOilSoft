@@ -180,6 +180,40 @@ Public Partial Class main
         End If
     End Sub
 
+    Private Sub aplicarEstilosDG()
+        If tabla = "autos" Then
+            autosConDeudaDG(dgv_main, Color.Red)
+        ElseIf tabla = "items" Then
+            resaltarcolumnaDG(dgv_main, lightItemCol, Color.Red)
+            pintaStockItemsDG(dgv_main, clrMinimo)
+        ElseIf tabla = "items_full" Then
+            resaltarcolumnaDG(dgv_main, lightItemCol, Color.Red)
+        ElseIf tabla = "archivoConsultas" Then
+            dgv_main.Columns(0).Width = 50
+        ElseIf tabla = "registros_stock" Then
+            resaltarcolumnaDG(dgv_main, lightRegStock, Color.Red)
+        ElseIf tabla = "pedidos" Then
+            If activo Then
+                resaltarcolumnaDG(dgv_main, 5, Color.Red)
+            Else
+                resaltarcolumnaDG(dgv_main, 6, Color.Red)
+            End If
+        ElseIf tabla = "pedidos_hoy" Then
+            resaltarcolumnaDG(dgv_main, 6, Color.Red)
+            resaltarPedidosInactivosDG(dgv_main, Color.Red)
+        ElseIf tabla = "casos" Or tabla = "casos_hoy" Then
+            If activo Then
+                resaltarcolumnaDG(dgv_main, 5, Color.Red)
+            Else
+                resaltarcolumnaDG(dgv_main, 6, Color.Red)
+            End If
+            casosConDeudaDG(dgv_main, Color.Red)
+        End If
+
+        dgv_main.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.ColumnHeader)
+        dgv_main.Refresh()
+    End Sub
+
     Private Sub actualizarlsv()
         Dim sqlstr As String = ""
         'chk_stock0.Visible = False
@@ -531,36 +565,7 @@ Public Partial Class main
             tPaginas = Math.Ceiling(nRegs / itXPage)
             txt_nPage.Text = pagina & " / " & tPaginas
 
-            If tabla = "autos" Then
-                autosConDeudaDG(dgv_main, Color.Red)
-            ElseIf tabla = "items" Then
-                resaltarcolumnaDG(dgv_main, lightItemCol, Color.Red)
-                pintaStockItemsDG(dgv_main, clrMinimo)
-            ElseIf tabla = "items_full" Then
-                resaltarcolumnaDG(dgv_main, lightItemCol, Color.Red)
-            ElseIf tabla = "archivoConsultas" Then
-                dgv_main.Columns(0).Width = 50
-            ElseIf tabla = "registros_stock" Then
-                resaltarcolumnaDG(dgv_main, lightRegStock, Color.Red)
-            ElseIf tabla = "pedidos" Then
-                If activo Then
-                    resaltarcolumnaDG(dgv_main, 5, Color.Red)
-                Else
-                    resaltarcolumnaDG(dgv_main, 6, Color.Red)
-                End If
-            ElseIf tabla = "pedidos_hoy" Then
-                resaltarcolumnaDG(dgv_main, 6, Color.Red)
-                resaltarPedidosInactivosDG(dgv_main, Color.Red)
-            ElseIf tabla = "casos" Or tabla = "casos_hoy" Then
-                If activo Then
-                    resaltarcolumnaDG(dgv_main, 5, Color.Red)
-                Else
-                    resaltarcolumnaDG(dgv_main, 6, Color.Red)
-                End If
-                casosConDeudaDG(dgv_main, Color.Red)
-                'dgv_main.Columns(13).Width = 0
-                'dgv_main.Columns(14).Width = 0
-            End If
+            aplicarEstilosDG()
         End If
     End Sub
 
@@ -577,35 +582,7 @@ Public Partial Class main
             tPaginas = Math.Ceiling(nRegs / itXPage)
             txt_nPage.Text = pagina & " / " & tPaginas
 
-            If tabla = "autos" Then
-                autosConDeudaDG(dgv_main, Color.Red)
-            ElseIf tabla = "items" Then
-                resaltarcolumnaDG(dgv_main, lightItemCol, Color.Red)
-                pintaStockItemsDG(dgv_main, clrMinimo)
-            ElseIf tabla = "items_full" Then
-                resaltarcolumnaDG(dgv_main, lightItemCol, Color.Red)
-            ElseIf tabla = "archivoConsultas" Then
-                dgv_main.Columns(0).Width = 50
-            ElseIf tabla = "registros_stock" Then
-                resaltarcolumnaDG(dgv_main, lightRegStock, Color.Red)
-            ElseIf tabla = "pedidos" Then
-                If activo Then
-                    resaltarcolumnaDG(dgv_main, 5, Color.Red)
-                Else
-                    resaltarcolumnaDG(dgv_main, 6, Color.Red)
-                End If
-            ElseIf tabla = "pedidos_hoy" Then
-                resaltarcolumnaDG(dgv_main, 6, Color.Red)
-                resaltarPedidosInactivosDG(dgv_main, Color.Red)
-            ElseIf tabla = "casos" Or tabla = "casos_hoy" Then
-                If activo Then
-                    resaltarcolumnaDG(dgv_main, 5, Color.Red)
-                Else
-                    resaltarcolumnaDG(dgv_main, 6, Color.Red)
-                End If
-                casosConDeudaDG(dgv_main, Color.Red)
-                'dgv_main.Columns(13).Width = 0
-                'dgv_main.Columns(14).Width = 0
+            aplicarEstilosDG()
             End If
         End If
     End Sub

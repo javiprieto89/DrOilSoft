@@ -374,8 +374,6 @@ Module mitem
                 row.Cells(0).Style.Font = New Font(dg.Font, FontStyle.Bold)
             End If
         Next
-        dg.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.ColumnHeader)
-        dg.Refresh()
     End Sub
 
     Public Function infoItem_lastItem() As item
