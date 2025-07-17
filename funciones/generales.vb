@@ -1,3 +1,4 @@
+'funciones/generales.vb
 ﻿Imports System.Data.SqlClient
 Imports System.Data.OleDb
 Imports Excel = Microsoft.Office.Interop.Excel
@@ -256,60 +257,23 @@ Module generales
     End Sub
 
     Public Function traer_info(ByVal db As String, ByVal sql As String, ByVal pone_columnas As Integer) ' As String
-        'Si pone_columnas = 1 Agrega los nombres de las columnas de la base al array
-        'Si se pone un argumento distinto a 0 o 1, se presupone q se deben poner las columnas
         If pone_columnas <> 0 And pone_columnas <> 1 Then pone_columnas = 1
 
-        Try
-            'Crea y abre una nueva conexión
-            abrirdb(serversql, db, usuariodb, passdb)
-
-            'Propiedades del SqlCommand
-            Dim comando As New SqlCommand
-            With comando
-                .CommandType = CommandType.Text
-                .CommandText = sql
-                .Connection = CN
-            End With
-
-            Dim da As New SqlDataAdapter 'Crear nuevo SqlDataAdapter
-            Dim dataset As New DataSet 'Crear nuevo dataset
-
-            da.SelectCommand = comando
-
-            'llenar el dataset
-            da.Fill(dataset, "Tabla")
-
-            'Las filas guardan los nombres del campo
-            'Las columnas guardan la info de cada campo
-
-
-            Dim cont_columnas, cont_filas As Integer
-
-            cont_columnas = dataset.Tables("tabla").Columns.Count - 1
-            cont_filas = dataset.Tables("tabla").Rows.Count - 1 'Filas DE LA BASE DE DATOS que PUEDE SER DISTINTA a la del array que lo contiene
-
-            Dim i, j As Integer
-            Dim datos(cont_filas + pone_columnas, cont_columnas) As String 'Más uno SI QUISIERA poner una fila con el nombre de las columnas
-
-            If pone_columnas = 1 Then
-                For i = 0 To cont_columnas 'Agrega el nombre de las columnas
-                    datos(0, i) = dataset.Tables("tabla").Columns(i).Caption
-                Next
-            End If
-
-            For i = 0 To cont_filas
-                For j = 0 To cont_columnas
-                    datos(cont_filas + pone_columnas, j) = dataset.Tables("tabla").Rows(i).Item(j).ToString
-                Next
+        Dim dt As DataTable = GetDataTable(sql)
+        Dim cont_columnas As Integer = dt.Columns.Count - 1
+        Dim cont_filas As Integer = dt.Rows.Count - 1
+        Dim datos(cont_filas + pone_columnas, cont_columnas) As String
+        If pone_columnas = 1 Then
+            For i As Integer = 0 To cont_columnas
+                datos(0, i) = dt.Columns(i).Caption
             Next
-            cerrardb()
-            Return datos
-        Catch ex As Exception
-            MsgBox(ex.Message.ToString)
-            cerrardb()
-            Return False
-        End Try
+        End If
+        For i As Integer = 0 To cont_filas
+            For j As Integer = 0 To cont_columnas
+                datos(i + pone_columnas, j) = dt.Rows(i).Item(j).ToString
+            Next
+        Next
+        Return datos
     End Function
 
     Public Sub closeandupdate(formulario As Form)
@@ -327,52 +291,10 @@ Module generales
 
 
     Public Function tablaatmppedidos(ByVal id As Integer, ByVal escaso As Boolean) As Boolean
-        'Obtengo el último pedido que se generó
-
-        Dim sql As String
-
         If id = 0 Then id = info_pedido().id_pedido
-        sql = "UPDATE tmppedidos_items " & _
-                                            "SET cantidad = src.cantidad " & _
-                                            "FROM tmppedidos_items dst " & _
-                                            "JOIN pedidos_detalle src " & _
-                                            "ON src.id_item = dst.id_item " & _
-                                            "WHERE dst.id_pedido = '" + id.ToString + "' " & _
-                                            "INSERT tmppedidos_items " & _
-                                            "(id_item, cantidad) " & _
-                                            "SELECT id_item" & _
-                                            ", cantidad, '" + id.ToString + "' " & _
-                                            "FROM pedidos_detalle src " & _
-                                            "WHERE NOT EXISTS " & _
-                                            "( " & _
-                                            "SELECT  * " & _
-                                            "FROM tmppedidos_items dst " & _
-                                            "WHERE src.id_item = dst.id_item)" & _
-                                            "AND dst.id_pedido = '" + id.ToString + "'" & _
-                                            ")"
-
-        abrirdb(serversql, basedb, usuariodb, passdb)
-
-        Dim mytrans As SqlTransaction
-        Dim Comando As New SqlCommand
-
-        mytrans = CN.BeginTransaction()
-
-        Try
-            Comando = New SqlCommand(sql, CN)
-
-
-            Comando.Transaction = mytrans
-            Comando.ExecuteNonQuery()
-
-            mytrans.Commit()
-            cerrardb()
-            Return True
-        Catch ex As Exception
-            MsgBox(ex.Message)
-            cerrardb()
-            Return False
-        End Try
+        Dim sql As String = "UPDATE tmppedidos_items SET cantidad = src.cantidad FROM tmppedidos_items dst JOIN pedidos_detalle src ON src.id_item = dst.id_item WHERE dst.id_pedido = '" & id.ToString & "' " &
+                            "INSERT tmppedidos_items (id_item, cantidad) SELECT id_item, cantidad, '" & id.ToString & "' FROM pedidos_detalle src WHERE NOT EXISTS (SELECT  * FROM tmppedidos_items dst WHERE src.id_item = dst.id_item AND dst.id_pedido = '" & id.ToString & "')"
+        Return ExecuteNonQuery(sql)
     End Function
 
     Public Function valida(ByVal str As String, ByVal t As Integer) As Boolean
