@@ -807,6 +807,12 @@ Public Partial Class main
 
     Private Sub dgv_main_MouseDown(sender As Object, e As MouseEventArgs) Handles dgv_main.MouseDown
         If e.Button = Windows.Forms.MouseButtons.Right Then
+            Dim hit As DataGridView.HitTestInfo = dgv_main.HitTest(e.X, e.Y)
+            If hit.RowIndex >= 0 Then
+                dgv_main.ClearSelection()
+                dgv_main.Rows(hit.RowIndex).Selected = True
+                dgv_main.CurrentCell = dgv_main.Rows(hit.RowIndex).Cells(hit.ColumnIndex)
+            End If
             cms_general.Items(0).Visible = True
             cms_general.Items(2).Visible = False
             cms_general.Items(3).Visible = False

@@ -148,6 +148,7 @@ Partial Class main
         Me.dgv_main.AllowUserToAddRows = False
         Me.dgv_main.AllowUserToDeleteRows = False
         Me.dgv_main.AllowUserToOrderColumns = True
+        Me.dgv_main.ContextMenuStrip = Me.cms_general
         Me.dgv_main.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.ColumnHeader
         Me.dgv_main.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
         Me.dgv_main.Location = New System.Drawing.Point(265, 88)
