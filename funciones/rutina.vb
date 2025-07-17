@@ -1,4 +1,5 @@
-﻿Module rutinas
+﻿'funciones/rutina.vb
+Module rutinas
 
     Sub errordb()
         MsgBox("Ocurrió un error en la base de datos, consulte con el programador", MsgBoxStyle.Critical + MsgBoxStyle.OkOnly)

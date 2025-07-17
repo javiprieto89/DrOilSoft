@@ -1,152 +1,41 @@
-﻿Imports System.Data.SqlClient
-
+'funciones/consultas_personalizadas.vb
+Imports System.Data.SqlClient
 Module consultas
     ' ************************************ FUNCIONES DE CONSULTAS PERSONALIZADAS **********************
+
     Public Function info_consulta(ByVal id_consulta As Integer) As consultaP
         Dim tmp As New consultaP
-        Dim sqlstr As String
-
-        Try
-            'Crea y abre una nueva conexión
-            abrirdb(serversql, basedb, usuariodb, passdb)
-
-            sqlstr = "SELECT c.id_consulta, c.nombre, c.consulta, c.activo FROM consultas_personalizadas AS c WHERE c.id_consulta = '" + id_consulta.ToString + "'"
-
-            'Propiedades del SqlCommand
-            Dim comando As New SqlCommand
-            With comando
-                .CommandType = CommandType.Text
-                .CommandText = sqlstr
-                .Connection = CN
+        Dim sqlstr As String = "SELECT c.id_consulta, c.nombre, c.consulta, c.activo FROM consultas_personalizadas AS c WHERE c.id_consulta = '" & id_consulta.ToString & "'"
+        Dim dt As DataTable = GetDataTable(sqlstr)
+        If dt.Rows.Count > 0 Then
+            With dt.Rows(0)
+                tmp.id_consulta = .Item(0).ToString
+                tmp.nombre = .Item(1).ToString
+                tmp.consulta = .Item(2).ToString
+                tmp.activo = .Item(3).ToString
             End With
-
-            Dim da As New SqlDataAdapter 'Crear nuevo SqlDataAdapter
-            Dim dataset As New DataSet 'Crear nuevo dataset
-
-            da.SelectCommand = comando
-
-            'llenar el dataset
-            da.Fill(dataset, "Tabla")
-            tmp.id_consulta = dataset.Tables("tabla").Rows(0).Item(0).ToString
-            tmp.nombre = dataset.Tables("tabla").Rows(0).Item(1).ToString
-            tmp.consulta = dataset.Tables("tabla").Rows(0).Item(2).ToString
-            tmp.activo = dataset.Tables("tabla").Rows(0).Item(3).ToString
-            cerrardb()
-            Return tmp
-        Catch ex As Exception
-            MsgBox(ex.Message.ToString)
-            tmp.nombre = "error"
-            cerrardb()
-            Return tmp
-        End Try
+        End If
+        Return tmp
     End Function
 
     Public Function addConsulta(ByVal c As consultaP) As Boolean
-        abrirdb(serversql, basedb, usuariodb, passdb)
-
-        Dim sqlstr As String
-        Dim mytrans As SqlTransaction
-        Dim Comando As New SqlCommand
-
-        mytrans = CN.BeginTransaction()
-
-        Try
-            sqlstr = "INSERT INTO consultas_personalizadas " &
-                    "(" &
-                        "nombre, " &
-                        "consulta, " &
-                        "activo" &
-                    ") " &
-                    "VALUES " &
-                    "(" &
-                        "@nombre, " &
-                        "@consulta, " &
-                        "@activo" &
-                    ")"
-
-            Comando = New SqlCommand(sqlstr, CN)
-            With Comando
-                With .Parameters
-                    .Clear()
-                    .AddWithValue("@nombre", c.nombre)
-                    .AddWithValue("@consulta", c.consulta)
-                    .AddWithValue("@activo", c.activo.ToString)
-                End With
-                .Transaction = mytrans
-                .ExecuteNonQuery()
-            End With
-
-            mytrans.Commit()
-            cerrardb()
-            Return True
-        Catch ex As Exception
-            MsgBox(ex.Message)
-            cerrardb()
-            Return False
-        End Try
+        Dim sqlstr As String = "INSERT INTO consultas_personalizadas (nombre, consulta, activo) VALUES ('" & c.nombre & "', '" & c.consulta & "', '" & c.activo.ToString & "')"
+        Return ExecuteNonQuery(sqlstr)
     End Function
 
     Public Function updateConsulta(ByVal c As consultaP, Optional borra As Boolean = False) As Boolean
-        abrirdb(serversql, basedb, usuariodb, passdb)
-
         Dim sqlstr As String
-        Dim mytrans As SqlTransaction
-        Dim Comando As New SqlCommand
-
-        mytrans = CN.BeginTransaction()
-
-        Try
-            If borra = True Then
-                sqlstr = "UPDATE consultas_personalizadas SET activo = '0' WHERE id_consulta = '" + c.id_consulta.ToString + "'"
-            Else
-                sqlstr = "UPDATE consultas_personalizadas SET nombre = @nombre, consulta = @consulta, activo = @activo  " &
-                        " WHERE id_consulta = '" + c.id_consulta.ToString + "'"
-            End If
-            Comando = New SqlCommand(sqlstr, CN)
-            With Comando
-                With .Parameters
-                    .Clear()
-                    .AddWithValue("@nombre", c.nombre)
-                    .AddWithValue("@consulta", c.consulta)
-                    .AddWithValue("@activo", c.activo.ToString)
-                End With
-                .Transaction = mytrans
-                .ExecuteNonQuery()
-            End With
-
-            mytrans.Commit()
-            cerrardb()
-            Return True
-        Catch ex As Exception
-            MsgBox(ex.Message)
-            cerrardb()
-            Return False
-        End Try
+        If borra = True Then
+            sqlstr = "UPDATE consultas_personalizadas SET activo = '0' WHERE id_consulta = '" & c.id_consulta.ToString & "'"
+        Else
+            sqlstr = "UPDATE consultas_personalizadas SET nombre = '" & c.nombre & "', consulta = '" & c.consulta & "', activo = '" & c.activo.ToString & "' WHERE id_consulta = '" & c.id_consulta.ToString & "'"
+        End If
+        Return ExecuteNonQuery(sqlstr)
     End Function
 
     Public Function borrarConsulta(ByVal c As consultaP) As Boolean
-        abrirdb(serversql, basedb, usuariodb, passdb)
-
-        Dim sqlstr As String = ""
-        Dim mytrans As SqlTransaction
-        Dim Comando As New SqlCommand
-
-        mytrans = CN.BeginTransaction()
-
-        Try
-            sqlstr = "DELETE FROM consultas_personalizadas WHERE id_consulta = '" + c.id_consulta.ToString + "'"
-            Comando = New SqlCommand(sqlstr, CN)
-            Comando.Transaction = mytrans
-            Comando.ExecuteNonQuery()
-
-            mytrans.Commit()
-            cerrardb()
-            Return True
-        Catch ex As Exception
-            MsgBox(ex.Message.ToString)
-            cerrardb()
-            Return False
-        End Try
+        Dim sqlstr As String = "DELETE FROM consultas_personalizadas WHERE id_consulta = '" & c.id_consulta.ToString & "'"
+        Return ExecuteNonQuery(sqlstr)
     End Function
     ' ************************************ FUNCIONES DE CONSULTAS PERSONALIZADAS **********************
 End Module
