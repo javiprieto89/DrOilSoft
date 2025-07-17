@@ -252,6 +252,7 @@ Public Partial Class main
         End If
 
         dgv_main.ResumeLayout()
+
         dgv_main.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.ColumnHeader)
         dgv_main.Refresh()
     End Sub
@@ -605,7 +606,7 @@ Public Partial Class main
             dgv_main.Visible = True
             tPaginas = Math.Ceiling(nRegs / itXPage)
             txt_nPage.Text = pagina & " / " & tPaginas
-            
+
             aplicarEstilosDG()
         End If
     End Sub
