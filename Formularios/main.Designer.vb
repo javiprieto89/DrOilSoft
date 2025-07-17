@@ -125,6 +125,7 @@ Partial Class main
         Me.t_GetDolar = New System.Windows.Forms.Timer(Me.components)
         Me.pic_search = New System.Windows.Forms.PictureBox()
         Me.pic = New System.Windows.Forms.PictureBox()
+        Me.dgv_main = New System.Windows.Forms.DataGridView()
         Me.cms_general.SuspendLayout()
         Me.cms_importar_exportar.SuspendLayout()
         Me.ss_info.SuspendLayout()
@@ -144,7 +145,6 @@ Partial Class main
         '
         'dgv_main
         '
-        Me.dgv_main = New System.Windows.Forms.DataGridView()
         Me.dgv_main.AllowUserToAddRows = False
         Me.dgv_main.AllowUserToDeleteRows = False
         Me.dgv_main.AllowUserToOrderColumns = True
