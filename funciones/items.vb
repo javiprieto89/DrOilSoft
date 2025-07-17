@@ -366,16 +366,16 @@ Module mitem
 
     Public Sub pintaStockItemsDG(ByVal dg As DataGridView, ByVal clrMinimo As Color)
         For Each row As DataGridViewRow In dg.Rows
-            Dim stock As Integer = CInt(row.Cells(4).Value)
-            Dim stockRepo As Integer = CInt(row.Cells(19).Value)
-            Dim controlaStock As Boolean = LCase(row.Cells(18).Value.ToString) = "si"
-            If controlaStock AndAlso stock <= stockRepo Then
-                row.Cells(0).Style.BackColor = clrMinimo
-                row.Cells(0).Style.Font = New Font(dg.Font, FontStyle.Bold)
+            If row.Cells.Count > 19 Then
+                Dim stock As Integer = CInt(row.Cells(4).Value)
+                Dim stockRepo As Integer = CInt(row.Cells(19).Value)
+                Dim controlaStock As Boolean = LCase(row.Cells(18).Value.ToString) = "si"
+                If controlaStock AndAlso stock <= stockRepo Then
+                    row.Cells(0).Style.BackColor = clrMinimo
+                    row.Cells(0).Style.Font = New Font(dg.Font, FontStyle.Bold)
+                End If
             End If
         Next
-        dg.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.ColumnHeader)
-        dg.Refresh()
     End Sub
 
     Public Function infoItem_lastItem() As item

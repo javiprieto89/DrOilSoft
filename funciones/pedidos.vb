@@ -588,8 +588,6 @@ Module pedidos
                 row.Cells(0).Style.Font = New Font(dg.Font, FontStyle.Bold)
             End If
         Next
-        dg.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.ColumnHeader)
-        dg.Refresh()
     End Sub
 
     Public Sub resaltarCasosInactivos(ByVal lsview As ListView, ByVal clr As Color)
@@ -612,8 +610,6 @@ Module pedidos
                 row.Cells(0).Style.Font = New Font(dg.Font, FontStyle.Bold)
             End If
         Next
-        dg.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.ColumnHeader)
-        dg.Refresh()
     End Sub
 
     Public Function idremitoAsociado(ByVal id_pedido As String) As Integer
