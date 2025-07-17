@@ -1,9 +1,6 @@
 ﻿Public Class add_proveedor
     Private Sub cmd_ok_Click(sender As Object, e As EventArgs) Handles cmd_ok.Click
-        If txt_nombre.Text = "" Then
-            MsgBox("El campo 'Nombre' es obligatorio y está vacio")
-            Exit Sub
-        End If
+        If Not CheckRequiredField(txt_nombre, "Nombre") Then Exit Sub
 
         Dim p As New proveedor
 

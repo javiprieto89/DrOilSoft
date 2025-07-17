@@ -1,12 +1,7 @@
 ﻿Public Class add_vendedor
     Private Sub cmd_ok_Click(sender As Object, e As EventArgs) Handles cmd_ok.Click
-        If txt_nombre.Text = "" Then
-            MsgBox("El campo 'Nombre' es obligatorio y está vacio")
-            Exit Sub
-        ElseIf txt_porcentaje.Text = "" Then
-            MsgBox("El campo 'Porcentaje' es obligatorio y está vacio")
-            Exit Sub
-        End If
+        If Not CheckRequiredField(txt_nombre, "Nombre") Then Exit Sub
+        If Not CheckRequiredField(txt_porcentaje, "Porcentaje") Then Exit Sub
 
         Dim tmp As New vendedor
 

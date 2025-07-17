@@ -16,10 +16,7 @@
             Exit Sub
         End If
 
-        If txt_nombre.Text = "" Then
-            MsgBox("El campo 'Nombre' es obligatorio y está vacio")
-            Exit Sub
-        End If
+        If Not CheckRequiredField(txt_nombre, "Nombre") Then Exit Sub
 
         Dim cl As New cliente
 
