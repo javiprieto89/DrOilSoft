@@ -583,7 +583,6 @@ Public Partial Class main
             txt_nPage.Text = pagina & " / " & tPaginas
 
             aplicarEstilosDG()
-            End If
         End If
     End Sub
 
