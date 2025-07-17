@@ -181,34 +181,77 @@ Public Partial Class main
     End Sub
 
     Private Sub aplicarEstilosDG()
-        If tabla = "autos" Then
-            autosConDeudaDG(dgv_main, Color.Red)
-        ElseIf tabla = "items" Then
-            resaltarcolumnaDG(dgv_main, lightItemCol, Color.Red)
-            pintaStockItemsDG(dgv_main, clrMinimo)
-        ElseIf tabla = "items_full" Then
-            resaltarcolumnaDG(dgv_main, lightItemCol, Color.Red)
-        ElseIf tabla = "archivoConsultas" Then
+        dgv_main.SuspendLayout()
+
+        For Each row As DataGridViewRow In dgv_main.Rows
+            Select Case tabla
+                Case "autos"
+                    If row.Cells.Count > 8 Then
+                        Dim val As Object = row.Cells(8).Value
+                        If val IsNot Nothing AndAlso val.ToString() = "Si" Then
+                            row.Cells(0).Style.BackColor = Color.Red
+                            row.Cells(0).Style.Font = New Font(dgv_main.Font, FontStyle.Bold)
+                        End If
+                    End If
+                Case "items"
+                    row.Cells(lightItemCol).Style.ForeColor = Color.Red
+                    row.Cells(lightItemCol).Style.Font = New Font(dgv_main.Font, FontStyle.Bold)
+                    If row.Cells.Count > 19 Then
+                        Dim stock As Integer = CInt(row.Cells(4).Value)
+                        Dim stockRepo As Integer = CInt(row.Cells(19).Value)
+                        Dim controlaStock As Boolean = LCase(row.Cells(18).Value.ToString()) = "si"
+                        If controlaStock AndAlso stock <= stockRepo Then
+                            row.Cells(0).Style.BackColor = clrMinimo
+                            row.Cells(0).Style.Font = New Font(dgv_main.Font, FontStyle.Bold)
+                        End If
+                    End If
+                Case "items_full"
+                    row.Cells(lightItemCol).Style.ForeColor = Color.Red
+                    row.Cells(lightItemCol).Style.Font = New Font(dgv_main.Font, FontStyle.Bold)
+                Case "registros_stock"
+                    row.Cells(lightRegStock).Style.ForeColor = Color.Red
+                    row.Cells(lightRegStock).Style.Font = New Font(dgv_main.Font, FontStyle.Bold)
+                Case "pedidos"
+                    If activo Then
+                        row.Cells(5).Style.ForeColor = Color.Red
+                        row.Cells(5).Style.Font = New Font(dgv_main.Font, FontStyle.Bold)
+                    Else
+                        row.Cells(6).Style.ForeColor = Color.Red
+                        row.Cells(6).Style.Font = New Font(dgv_main.Font, FontStyle.Bold)
+                    End If
+                Case "pedidos_hoy"
+                    row.Cells(6).Style.ForeColor = Color.Red
+                    row.Cells(6).Style.Font = New Font(dgv_main.Font, FontStyle.Bold)
+                    If row.Cells.Count > 9 Then
+                        Dim inactive As Object = row.Cells(9).Value
+                        If inactive IsNot Nothing AndAlso inactive.ToString() = "False" Then
+                            row.Cells(0).Style.BackColor = Color.Red
+                            row.Cells(0).Style.Font = New Font(dgv_main.Font, FontStyle.Bold)
+                        End If
+                    End If
+                Case "casos", "casos_hoy"
+                    If activo Then
+                        row.Cells(5).Style.ForeColor = Color.Red
+                        row.Cells(5).Style.Font = New Font(dgv_main.Font, FontStyle.Bold)
+                    Else
+                        row.Cells(6).Style.ForeColor = Color.Red
+                        row.Cells(6).Style.Font = New Font(dgv_main.Font, FontStyle.Bold)
+                    End If
+                    If row.Cells.Count > 8 Then
+                        Dim deuda As Object = row.Cells(8).Value
+                        If deuda IsNot Nothing AndAlso deuda.ToString() = "Si" Then
+                            row.Cells(0).Style.BackColor = Color.Red
+                            row.Cells(0).Style.Font = New Font(dgv_main.Font, FontStyle.Bold)
+                        End If
+                    End If
+            End Select
+        Next
+
+        If tabla = "archivoConsultas" Then
             dgv_main.Columns(0).Width = 50
-        ElseIf tabla = "registros_stock" Then
-            resaltarcolumnaDG(dgv_main, lightRegStock, Color.Red)
-        ElseIf tabla = "pedidos" Then
-            If activo Then
-                resaltarcolumnaDG(dgv_main, 5, Color.Red)
-            Else
-                resaltarcolumnaDG(dgv_main, 6, Color.Red)
-            End If
-        ElseIf tabla = "pedidos_hoy" Then
-            resaltarcolumnaDG(dgv_main, 6, Color.Red)
-            resaltarPedidosInactivosDG(dgv_main, Color.Red)
-        ElseIf tabla = "casos" Or tabla = "casos_hoy" Then
-            If activo Then
-                resaltarcolumnaDG(dgv_main, 5, Color.Red)
-            Else
-                resaltarcolumnaDG(dgv_main, 6, Color.Red)
-            End If
-            casosConDeudaDG(dgv_main, Color.Red)
         End If
+
+        dgv_main.ResumeLayout()
 
         dgv_main.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.ColumnHeader)
         dgv_main.Refresh()
