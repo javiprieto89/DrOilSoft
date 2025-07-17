@@ -1,4 +1,5 @@
-﻿Imports System.Data
+﻿'funciones/clientes.vb
+Imports System.Data
 Imports System.Data.SqlClient
 
 Module clientes
@@ -79,101 +80,50 @@ Module clientes
                                     ByVal consulta_abiertos As Boolean, ByVal consulta_cerrados As Boolean) As DataTable
         Dim sqlstr As String
         Dim where As String = ""
-        Dim da As New SqlDataAdapter 'Crear nuevo SqlDataAdapter
-        Dim dt As New DataTable 'Crear nuevo dataset
-
-        Try
-            'Crea y abre una nueva conexión
-            abrirdb(serversql, basedb, usuariodb, passdb)
-
-            If consulta_pedidos And Not consulta_casos Then
-                where = " AND p.es_caso = '0'"
-            ElseIf Not consulta_pedidos And consulta_casos Then
-                where = " AND p.es_caso = '1'"
-            End If
-
-            If consulta_abiertos And Not consulta_cerrados Then
-                where += " AND p.activo = '1' AND p.cerrado = '0'"
-            ElseIf Not consulta_abiertos And consulta_cerrados Then
-                where += " AND p.activo = '0' AND p.cerrado = '1'"
-            End If
-
-            sqlstr = "SET DATEFORMAT mdy; SELECT p.id_pedido AS 'ID', CAST(p.fecha AS VARCHAR(50)) AS 'Fecha', (CASE p.es_caso WHEN 1 THEN 'Si' ELSE 'No' END) AS '¿Es caso?', tc.tipo AS 'Tipo', CONCAT('$ ', p.total) AS 'Total' " &
-                        "FROM pedidos As p " &
-                        "LEFT JOIN tipos_casos AS tc ON p.id_tipo = tc.id_tipo " &
-                        "WHERE p.fecha BETWEEN '" + fecha_desde.ToString("MM/dd/yyyy") + "' AND '" + fecha_hasta.ToString("MM/dd/yyyy") + "' " &
+        If consulta_pedidos And Not consulta_casos Then
+            where = " AND p.es_caso = '0'"
+        ElseIf Not consulta_pedidos And consulta_casos Then
+            where = " AND p.es_caso = '1'"
+        End If
+        If consulta_abiertos And Not consulta_cerrados Then
+            where += " AND p.activo = '1' AND p.cerrado = '0'"
+        ElseIf Not consulta_abiertos And consulta_cerrados Then
+            where += " AND p.activo = '0' AND p.cerrado = '1'"
+        End If
+        sqlstr = "SET DATEFORMAT mdy; SELECT p.id_pedido AS 'ID', CAST(p.fecha AS VARCHAR(50)) AS 'Fecha', (CASE p.es_caso WHEN 1 THEN 'Si' ELSE 'No' END) AS '¿Es caso?', tc.tipo AS 'Tipo', CONCAT('$ ', p.total) AS 'Total' " & _
+                        "FROM pedidos As p " & _
+                        "LEFT JOIN tipos_casos AS tc ON p.id_tipo = tc.id_tipo " & _
+                        "WHERE p.fecha BETWEEN '" + fecha_desde.ToString("MM/dd/yyyy") + "' AND '" + fecha_hasta.ToString("MM/dd/yyyy") + "' " & _
                         "AND p.id_cliente = '" + id_cliente.ToString + "'"
-            sqlstr += where
-
-            'Propiedades del SqlCommand
-            Dim comando As New SqlCommand
-            With comando
-                .CommandType = CommandType.Text
-                .CommandText = sqlstr
-                .Connection = CN
-            End With
-
-            da.SelectCommand = comando
-
-            'llenar el dataset
-            da.Fill(dt)
-            Return dt
-        Catch ex As Exception
-            MsgBox(ex.Message.ToString)
-            Return dt
-        Finally
-            cerrardb()
-        End Try
+        sqlstr += where
+        Dim dt As DataTable = GetDataTable(sqlstr)
+        Return dt
     End Function
     Public Function consultaTotalCcCliente(ByVal id_cliente As Integer, ByVal fecha_desde As Date, ByVal fecha_hasta As Date,
                                     ByVal consulta_pedidos As Boolean, ByVal consulta_casos As Boolean,
                                     ByVal consulta_abiertos As Boolean, ByVal consulta_cerrados As Boolean) As String
         Dim sqlstr As String
         Dim where As String = ""
-        Dim da As New SqlDataAdapter 'Crear nuevo SqlDataAdapter
-        Dim dt As New DataTable 'Crear nuevo dataset
-
-        Try
-            'Crea y abre una nueva conexión
-            abrirdb(serversql, basedb, usuariodb, passdb)
-
-            If consulta_pedidos And Not consulta_casos Then
-                where = " AND p.es_caso = '0'"
-            ElseIf Not consulta_pedidos And consulta_casos Then
-                where = " AND p.es_caso = '1'"
-            End If
-
-            If consulta_abiertos And Not consulta_cerrados Then
-                where += " AND p.activo = '1' AND p.cerrado = '0'"
-            ElseIf Not consulta_abiertos And consulta_cerrados Then
-                where += " AND p.activo = '0' AND p.cerrado = '1'"
-            End If
-
-            sqlstr = "SET DATEFORMAT mdy; SELECT CONCAT('$ ', SUM(p.total)) AS 'Total' " &
-                        "FROM pedidos As p " &
-                        "WHERE p.fecha BETWEEN '" + fecha_desde.ToString("MM/dd/yyyy") + "' AND '" + fecha_hasta.ToString("MM/dd/yyyy") + "' " &
+        If consulta_pedidos And Not consulta_casos Then
+            where = " AND p.es_caso = '0'"
+        ElseIf Not consulta_pedidos And consulta_casos Then
+            where = " AND p.es_caso = '1'"
+        End If
+        If consulta_abiertos And Not consulta_cerrados Then
+            where += " AND p.activo = '1' AND p.cerrado = '0'"
+        ElseIf Not consulta_abiertos And consulta_cerrados Then
+            where += " AND p.activo = '0' AND p.cerrado = '1'"
+        End If
+        sqlstr = "SET DATEFORMAT mdy; SELECT CONCAT('$ ', SUM(p.total)) AS 'Total' " & _
+                        "FROM pedidos As p " & _
+                        "WHERE p.fecha BETWEEN '" + fecha_desde.ToString("MM/dd/yyyy") + "' AND '" + fecha_hasta.ToString("MM/dd/yyyy") + "' " & _
                         "AND p.id_cliente = '" + id_cliente.ToString + "'"
-            sqlstr += where
-
-            'Propiedades del SqlCommand
-            Dim comando As New SqlCommand
-            With comando
-                .CommandType = CommandType.Text
-                .CommandText = sqlstr
-                .Connection = CN
-            End With
-
-            da.SelectCommand = comando
-
-            'llenar el dataset
-            da.Fill(dt)
+        sqlstr += where
+        Dim dt As DataTable = GetDataTable(sqlstr)
+        If dt.Rows.Count > 0 Then
             Return dt.Rows(0).Item(0).ToString
-        Catch ex As Exception
-            MsgBox(ex.Message.ToString)
-            Return ""
-        Finally
-            cerrardb()
-        End Try
+        End If
+        Return ""
     End Function
     ' ************************************ FUNCIONES DE CLIENTES ***************************
 End Module
