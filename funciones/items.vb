@@ -1,210 +1,74 @@
+'funciones/items.vb
 ﻿Imports System.Data.SqlClient
 
 Module mitem
     ' ************************************ FUNCIONES DE ITEMS ***************************
     Public Function info_item(ByVal id_item As String) As item
         Dim tmp As New item
-        Dim sqlstr As String = "SELECT * FROM items WHERE id_item = '" + id_item + "'"
-        Try
-            'Crea y abre una nueva conexión
-            abrirdb(serversql, basedb, usuariodb, passdb)
-
-            'Propiedades del SqlCommand
-            Dim comando As New SqlCommand
-            With comando
-                .CommandType = CommandType.Text
-                .CommandText = sqlstr
-                .Connection = CN
+        Dim sqlstr As String = "SELECT * FROM items WHERE id_item = '" & id_item & "'"
+        Dim dt As DataTable = GetDataTable(sqlstr)
+        If dt.Rows.Count > 0 Then
+            With dt.Rows(0)
+                tmp.id_item = .Item(0).ToString
+                tmp.item = .Item(1).ToString
+                tmp.descript = .Item(2).ToString
+                tmp.cantidad = .Item(3).ToString
+                tmp.costo = .Item(4).ToString
+                tmp.precio_lista = .Item(5).ToString
+                tmp.id_tipo = .Item(6).ToString
+                tmp.id_marca = .Item(7).ToString
+                tmp.id_proveedor = .Item(8).ToString
+                tmp.wega = .Item(9).ToString
+                tmp.fram = .Item(10).ToString
+                tmp.mann = .Item(11).ToString
+                If .Item(12).ToString <> "" Then tmp.id_rosca = .Item(12).ToString
+                tmp.markup = .Item(13).ToString
+                tmp.descuento = .Item(14).ToString
+                tmp.id_iva = .Item(15).ToString
+                tmp.activo = .Item(16).ToString
+                tmp.EAN = .Item(17).ToString
+                tmp.checkStock = .Item(18).ToString
+                tmp.stockRepo = .Item(19).ToString
+                tmp.oferta = .Item(20).ToString
+                tmp.oem = .Item(21).ToString
             End With
-
-            Dim da As New SqlDataAdapter 'Crear nuevo SqlDataAdapter
-            Dim dataset As New DataSet 'Crear nuevo dataset
-
-            da.SelectCommand = comando
-
-            'llenar el dataset
-            da.Fill(dataset, "Tabla")
-            tmp.id_item = dataset.Tables("tabla").Rows(0).Item(0).ToString
-            tmp.item = dataset.Tables("tabla").Rows(0).Item(1).ToString
-            tmp.descript = dataset.Tables("tabla").Rows(0).Item(2).ToString
-            tmp.cantidad = dataset.Tables("tabla").Rows(0).Item(3).ToString
-            tmp.costo = dataset.Tables("tabla").Rows(0).Item(4).ToString
-            tmp.precio_lista = dataset.Tables("tabla").Rows(0).Item(5).ToString
-            tmp.id_tipo = dataset.Tables("tabla").Rows(0).Item(6).ToString
-            tmp.id_marca = dataset.Tables("tabla").Rows(0).Item(7).ToString
-            tmp.id_proveedor = dataset.Tables("tabla").Rows(0).Item(8).ToString
-            tmp.wega = dataset.Tables("tabla").Rows(0).Item(9).ToString
-            tmp.fram = dataset.Tables("tabla").Rows(0).Item(10).ToString
-            tmp.mann = dataset.Tables("tabla").Rows(0).Item(11).ToString
-            If dataset.Tables("tabla").Rows(0).Item(12).ToString <> "" Then
-                tmp.id_rosca = dataset.Tables("tabla").Rows(0).Item(12).ToString
-            End If
-            tmp.markup = dataset.Tables("tabla").Rows(0).Item(13).ToString
-            tmp.descuento = dataset.Tables("tabla").Rows(0).Item(14).ToString
-            tmp.id_iva = dataset.Tables("tabla").Rows(0).Item(15).ToString
-            tmp.activo = dataset.Tables("tabla").Rows(0).Item(16).ToString
-            tmp.EAN = dataset.Tables("tabla").Rows(0).Item(17).ToString
-            tmp.checkStock = dataset.Tables("tabla").Rows(0).Item(18).ToString
-            tmp.stockRepo = dataset.Tables("tabla").Rows(0).Item(19).ToString
-            tmp.oferta = dataset.Tables("tabla").Rows(0).Item(20).ToString
-            tmp.oem = dataset.Tables("tabla").Rows(0).Item(21).ToString
-            cerrardb()
-            Return tmp
-        Catch ex As Exception
-            MsgBox(ex.Message.ToString)
-            tmp.descript = "error"
-            cerrardb()
-            Return tmp
-        End Try
+        End If
+        Return tmp
     End Function
 
     Public Function info_itemtmp(ByVal _idItem As Integer, ByVal _idUsuario As Integer, ByVal _idUnico As String) As Boolean
-        Dim sqlstr As String
-        Dim tmp As New item
-        Dim comando As New SqlCommand
-        Dim da As New SqlDataAdapter 'Crear nuevo SqlDataAdapter
-        Dim dataset As New DataSet 'Crear nuevo dataset
-
-        Try
-
-            sqlstr = "SELECT * FROM tmppedidos_items WHERE id_item = '" + _idItem.ToString + "' AND id_usuario = '" _
-                    + _idUsuario.ToString + "' AND id_unico = '" + _idUnico + "'"
-
-            'Crea y abre una nueva conexión
-            abrirdb(serversql, basedb, usuariodb, passdb)
-
-            'Propiedades del SqlCommand
-
-            With comando
-                .CommandType = CommandType.Text
-                .CommandText = sqlstr
-                .Connection = CN
-            End With
-
-            da.SelectCommand = comando
-
-            'llenar el dataset
-            da.Fill(dataset, "Tabla")
-            tmp.id_item = dataset.Tables("tabla").Rows(0).Item(0).ToString
-            cerrardb()
-            Return True
-        Catch ex As Exception
-            'MsgBox(ex.Message.ToString)
-            'tmp.descript = "error"
-            cerrardb()
-            Return False
-        End Try
+        Dim sqlstr As String = "SELECT * FROM tmppedidos_items WHERE id_item = '" & _idItem.ToString & "' AND id_usuario = '" & _idUsuario.ToString & "' AND id_unico = '" & _idUnico & "'"
+        Dim dt As DataTable = GetDataTable(sqlstr)
+        Return dt.Rows.Count > 0
     End Function
 
     Public Function additem(it As item) As Boolean
-        abrirdb(serversql, basedb, usuariodb, passdb)
         Dim sqlstr As String
-
-        Dim mytrans As SqlTransaction
-        Dim Comando As New SqlCommand
-
-        mytrans = CN.BeginTransaction()
-
-        Try
-
-            If it.id_rosca = 0 Then
-                sqlstr = "INSERT INTO items (item, descript, cantidad, costo,  precio_lista, id_tipo, id_marca, id_proveedor, wega, fram, mann, markup, descuento, id_iva, activo, EAN, checkStock, stockRepo, oferta, oem) VALUES " &
-                                                   "('" + it.item.ToString + "', '" + it.descript.ToString + "', '" + it.cantidad.ToString + "', '" + it.costo.ToString + "', '" + it.precio_lista.ToString + "', '" + it.id_tipo.ToString + "', '" _
-                                                   + it.id_marca.ToString + "', '" + it.id_proveedor.ToString + "', '" + it.wega + "', '" + it.fram + "', '" _
-                                                   + it.mann + "', '" + it.markup.ToString + "', '" + it.descuento.ToString + "', '" + it.id_iva.ToString + "', '" + it.activo.ToString + "' " _
-                                                   + ", '" + it.EAN + "', '" + it.checkStock.ToString + "', '" + it.stockRepo.ToString + "', '" + it.oferta.ToString + "', '" + it.oem + "')"
-                Comando = New SqlCommand(sqlstr, CN)
-            Else
-                sqlstr = "INSERT INTO items (item, descript, cantidad, costo,  precio_lista, id_tipo, id_marca, id_proveedor, wega, fram, mann, id_rosca, markup, descuento, id_iva, activo, EAN, checkStock, stockRepo, oferta, oem) VALUES " &
-                                                   "('" + it.item.ToString + "', '" + it.descript.ToString + "', '" + it.cantidad.ToString + "', '" + it.costo.ToString + "', '" + it.precio_lista.ToString + "', '" + it.id_tipo.ToString + "', '" _
-                                                   + it.id_marca.ToString + "', '" + it.id_proveedor.ToString + "', '" + it.wega + "', '" + it.fram + "', '" _
-                                                   + it.mann + "', '" + it.id_rosca.ToString + "', '" + it.markup.ToString + "', '" + it.descuento.ToString + "', '" + it.id_iva.ToString + "', '" + it.activo.ToString + "' " _
-                                                   + ", '" + it.EAN + "', '" + it.checkStock.ToString + "', '" + it.stockRepo.ToString + "', '" + it.oferta.ToString + "', '" + it.oem + "')"
-            End If
-
-            Comando = New SqlCommand(sqlstr, CN)
-            Comando.Transaction = mytrans
-            Comando.ExecuteNonQuery()
-
-            mytrans.Commit()
-            cerrardb()
-            Return True
-        Catch ex As Exception
-            MsgBox(ex.Message)
-            cerrardb()
-            Return False
-        End Try
+        If it.id_rosca = 0 Then
+            sqlstr = "INSERT INTO items (item, descript, cantidad, costo, precio_lista, id_tipo, id_marca, id_proveedor, wega, fram, mann, markup, descuento, id_iva, activo, EAN, checkStock, stockRepo, oferta, oem) VALUES ('" & it.item & "', '" & it.descript & "', '" & it.cantidad & "', '" & it.costo & "', '" & it.precio_lista & "', '" & it.id_tipo & "', '" & it.id_marca & "', '" & it.id_proveedor & "', '" & it.wega & "', '" & it.fram & "', '" & it.mann & "', '" & it.markup & "', '" & it.descuento & "', '" & it.id_iva & "', '" & it.activo & "', '" & it.EAN & "', '" & it.checkStock & "', '" & it.stockRepo & "', '" & it.oferta & "', '" & it.oem & "')"
+        Else
+            sqlstr = "INSERT INTO items (item, descript, cantidad, costo, precio_lista, id_tipo, id_marca, id_proveedor, wega, fram, mann, id_rosca, markup, descuento, id_iva, activo, EAN, checkStock, stockRepo, oferta, oem) VALUES ('" & it.item & "', '" & it.descript & "', '" & it.cantidad & "', '" & it.costo & "', '" & it.precio_lista & "', '" & it.id_tipo & "', '" & it.id_marca & "', '" & it.id_proveedor & "', '" & it.wega & "', '" & it.fram & "', '" & it.mann & "', '" & it.id_rosca & "', '" & it.markup & "', '" & it.descuento & "', '" & it.id_iva & "', '" & it.activo & "', '" & it.EAN & "', '" & it.checkStock & "', '" & it.stockRepo & "', '" & it.oferta & "', '" & it.oem & "')"
+        End If
+        Return ExecuteNonQuery(sqlstr)
     End Function
 
     Public Function updateitem(it As item, Optional borra As Boolean = False) As Boolean
-        abrirdb(serversql, basedb, usuariodb, passdb)
-
-        Dim mytrans As SqlTransaction
-        Dim Comando As New SqlCommand
         Dim sqlstr As String
-
-        mytrans = CN.BeginTransaction()
-
-        Try
-            If borra = True Then
-                sqlstr = "UPDATE items SET activo = '0' WHERE id_item = '" + it.id_item.ToString + "'"
+        If borra Then
+            sqlstr = "UPDATE items SET activo = '0' WHERE id_item = '" & it.id_item.ToString & "'"
+        Else
+            If it.id_rosca = 0 Then
+                sqlstr = "SET DATEFORMAT dmy; UPDATE items SET item = '" & it.item & "', descript = '" & it.descript & "', cantidad = '" & it.cantidad.ToString & "', costo = '" & it.costo.ToString & "', precio_lista = '" & it.precio_lista.ToString & "', id_tipo = '" & it.id_tipo.ToString & "', id_marca = '" & it.id_marca.ToString & "', id_proveedor = '" & it.id_proveedor.ToString & "', wega = '" & it.wega & "', fram = '" & it.fram & "', mann = '" & it.mann & "', markup = '" & it.markup.ToString & "', descuento = '" & it.descuento.ToString & "', id_iva = '" & it.id_iva.ToString & "', activo = '" & it.activo.ToString & "', ean = '" & it.EAN & "', checkStock = '" & it.checkStock.ToString & "', stockRepo = '" & it.stockRepo.ToString & "', oferta = '" & it.oferta.ToString & "', oem = '" & it.oem & "', ultima_modificacion = '" & it.ultima_modificacion.ToString & "' WHERE id_item = '" & it.id_item.ToString & "'"
             Else
-                If it.id_rosca = 0 Then
-                    sqlstr = "SET DATEFORMAT dmy; UPDATE items SET item = '" + it.item + "', descript = '" + it.descript + "', cantidad = '" + it.cantidad.ToString + "', costo = '" + it.costo.ToString + "', precio_lista = '" _
-                                           + it.precio_lista.ToString + "', id_tipo = '" + it.id_tipo.ToString + "', id_marca = '" + it.id_marca.ToString + "', id_proveedor =  '" _
-                                          + it.id_proveedor.ToString + "', wega = '" + it.wega.ToString + "', fram = '" + it.fram.ToString + "', mann = '" + it.mann.ToString + "', markup = '" _
-                                          + it.markup.ToString + "', descuento = '" + it.descuento.ToString + "', id_iva = '" + it.id_iva.ToString + "', activo = '" _
-                                          + it.activo.ToString + "', ean = '" + it.EAN + "', checkStock = '" + it.checkStock.ToString + "', stockRepo = '" _
-                                          + it.stockRepo.ToString + "',  " & "oferta = '" + it.oferta.ToString + "', oem = '" + it.oem + "', ultima_modificacion = '" + it.ultima_modificacion.ToString + "' " _
-                                          + "WHERE id_item = '" + it.id_item.ToString + "'"
-                Else
-                    sqlstr = "SET DATEFORMAT dmy; UPDATE items SET item = '" + it.item + "', descript = '" + it.descript + "', cantidad = '" + it.cantidad.ToString + "', costo = '" + it.costo.ToString + "', precio_lista = '" _
-                                             + it.precio_lista.ToString + "', id_tipo = '" + it.id_tipo.ToString + "', id_marca = '" + it.id_marca.ToString + "', id_proveedor =  '" _
-                                            + it.id_proveedor.ToString + "', wega = '" + it.wega.ToString + "', fram = '" + it.fram.ToString + "', mann = '" + it.mann.ToString + "', id_rosca = '" + it.id_rosca.ToString + "', markup = '" _
-                                            + it.markup.ToString + "', descuento ='" + it.descuento.ToString + "', id_iva = '" + it.id_iva.ToString + "', activo = '" _
-                                            + it.activo.ToString + "', ean = '" + it.EAN + "', checkStock = '" + it.checkStock.ToString + "', stockRepo = '" _
-                                            + it.stockRepo.ToString + "', " & "oferta = '" + it.oferta.ToString + "', oem = '" + it.oem + "', ultima_modificacion = '" + it.ultima_modificacion.ToString + "' " _
-                                            + "WHERE id_item = '" + it.id_item.ToString + "'"
-                End If
+                sqlstr = "SET DATEFORMAT dmy; UPDATE items SET item = '" & it.item & "', descript = '" & it.descript & "', cantidad = '" & it.cantidad.ToString & "', costo = '" & it.costo.ToString & "', precio_lista = '" & it.precio_lista.ToString & "', id_tipo = '" & it.id_tipo.ToString & "', id_marca = '" & it.id_marca.ToString & "', id_proveedor =  '" & it.id_proveedor.ToString & "', wega = '" & it.wega & "', fram = '" & it.fram & "', mann = '" & it.mann & "', id_rosca = '" & it.id_rosca.ToString & "', markup = '" & it.markup.ToString & "', descuento ='" & it.descuento.ToString & "', id_iva = '" & it.id_iva.ToString & "', activo = '" & it.activo.ToString & "', ean = '" & it.EAN & "', checkStock = '" & it.checkStock.ToString & "', stockRepo = '" & it.stockRepo.ToString & "', oferta = '" & it.oferta.ToString & "', oem = '" & it.oem & "', ultima_modificacion = '" & it.ultima_modificacion.ToString & "' WHERE id_item = '" & it.id_item.ToString & "'"
             End If
-
-            Comando = New SqlCommand(sqlstr, CN)
-            Comando.Transaction = mytrans
-            Comando.ExecuteNonQuery()
-
-            mytrans.Commit()
-            cerrardb()
-            Return True
-        Catch ex As Exception
-            MsgBox(ex.Message)
-            cerrardb()
-            Return False
-        End Try
+        End If
+        Return ExecuteNonQuery(sqlstr)
     End Function
 
     Public Function borraritem(it As item) As Boolean
-        abrirdb(serversql, basedb, usuariodb, passdb)
-
-        Dim mytrans As SqlTransaction
-        Dim Comando As New SqlCommand
-        Dim sqlstr As String
-
-        mytrans = CN.BeginTransaction()
-
-        Try
-            sqlstr = "DELETE FROM items WHERE id_item = '" + it.id_item.ToString + "'"
-            Comando = New SqlCommand(sqlstr, CN)
-            Comando.Transaction = mytrans
-            Comando.ExecuteNonQuery()
-
-            mytrans.Commit()
-            cerrardb()
-            Return True
-        Catch ex As Exception
-            MsgBox(ex.Message.ToString)
-            cerrardb()
-            Return False
-        End Try
+        Dim sqlstr As String = "DELETE FROM items WHERE id_item = '" & it.id_item.ToString & "'"
+        Return ExecuteNonQuery(sqlstr)
     End Function
 
     Public Function existeitem(ByVal i As String) As Integer
